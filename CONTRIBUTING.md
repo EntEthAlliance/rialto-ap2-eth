@@ -16,9 +16,9 @@ Written contributions to the specification text (issues, pull requests against `
 
 | What | License |
 | --- | --- |
-| Specification text (`README.md`, published page) | CC BY 4.0 — derivative rights in the document do not extend to modifying the Specification it describes (IPR Policy § 3.3) |
+| Specification text (`README.md`, published page) | CC BY 4.0: derivative rights in the document do not extend to modifying the Specification it describes (IPR Policy § 3.3) |
 | Code (`demo.html`, schemas, reference implementations) | Apache License 2.0 (see `LICENSE`) |
 
 ## Not a contribution
 
-Communications conspicuously marked “Not a Contribution” are excluded, per the EEA Contributor License Agreement definitions.
+Communications conspicuously marked "Not a Contribution" are excluded, per the EEA Contributor License Agreement definitions.
