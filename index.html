@@ -1,740 +1,201 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <!-- EEA-PAGES Analytics (GT-PL9524M) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=GT-PL9524M"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'GT-PL9524M');
-  </script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<meta name="description" content="Rialto AP2-Ethereum Trust Adapter — EEA Draft Specification, a neutral trust and adjudication layer for the Agent Payments Protocol">
-<title>Rialto AP2-Ethereum Trust Adapter — EEA</title>
-<link rel="canonical" href="https://entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Kode+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: #EDEAE3; color: #16181A; font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; line-height: 1.6; font-feature-settings: "kern","liga","onum"; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-  * { box-sizing: border-box; }
-  ::selection { background: #1F5C4A; color: #EDEAE3; }
-  a { color: #1F5C4A; text-decoration: none; }
-  a:hover { color: #123A2E; }
-  img { max-width: 100%; height: auto; display: block; }
-  :focus-visible { outline: 2px solid #1F5C4A; outline-offset: 2px; }
-  section[id] { scroll-margin-top: 84px; }
-  .toc { flex: 0 0 216px; position: sticky; top: 120px; padding: 8px 0 40px; }
-  .toc-list { display: flex; flex-direction: column; gap: 2px; }
-  @media (max-width: 1039px) {
-    .toc { flex: 1 1 100%; position: static; padding: 0 0 32px; }
-    .toc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px 20px; }
-  }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rialto — an incubation draft for an AP2–Ethereum extension">
+  <title>Rialto — AP2–Ethereum Extension</title>
+  <style>
+    :root {
+      --paper: #f1eee7;
+      --panel: #fffdf8;
+      --ink: #161d1a;
+      --muted: #59635f;
+      --line: #cbc8bf;
+      --green: #195c49;
+      --mint: #a6e3cf;
+      --navy: #10231e;
+      --amber: #8a4b0f;
+      --amber-bg: #fff3db;
+      --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.65 Inter, Arial, sans-serif; }
+    a { color: var(--green); }
+    code { font-family: var(--mono); font-size: .9em; background: #e5e1d8; padding: 2px 5px; }
+    header { background: var(--navy); color: #f8f4ea; padding: 24px max(24px, calc((100vw - 1180px)/2)); }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    nav a { color: #d7e4df; text-decoration: none; }
+    .brand { font: 600 13px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+    .links { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; }
+    .hero { background: var(--navy); color: #f8f4ea; padding: 60px max(24px, calc((100vw - 1180px)/2)) 76px; border-top: 1px solid #2b4038; }
+    .eyebrow { color: var(--mint); font: 600 12px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .16em; }
+    h1 { font-size: clamp(58px, 12vw, 150px); line-height: .9; letter-spacing: -.06em; margin: 18px 0 24px; }
+    .dek { max-width: 820px; color: #c8d3ce; font-size: clamp(19px, 2.3vw, 28px); line-height: 1.45; }
+    .status { display: inline-block; margin-top: 30px; color: #2e2415; background: var(--mint); padding: 9px 13px; font: 700 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .1em; }
+    main { max-width: 1180px; margin: auto; padding: 42px 24px 90px; }
+    .notice { padding: 22px 24px; background: var(--amber-bg); border-left: 5px solid var(--amber); margin-bottom: 38px; }
+    section { padding: 44px 0; border-top: 1px solid var(--line); }
+    h2 { font-size: clamp(30px, 4vw, 50px); line-height: 1.08; letter-spacing: -.035em; margin: 0 0 22px; }
+    h3 { font-size: 21px; margin-top: 30px; }
+    p, li { max-width: 82ch; }
+    .lead { font-size: 20px; color: #34403b; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 26px; }
+    .card { background: var(--panel); border: 1px solid var(--line); padding: 24px; }
+    .card .number { color: var(--green); font: 700 13px var(--mono); }
+    .card h3 { margin: 10px 0 8px; }
+    .card p { margin: 0; color: var(--muted); }
+    .flow { display: flex; gap: 8px; align-items: stretch; overflow-x: auto; padding: 14px 0 5px; }
+    .flow div { min-width: 170px; flex: 1; background: var(--panel); border: 1px solid var(--line); padding: 18px; font-size: 14px; }
+    .flow span { color: var(--green); font: 700 11px var(--mono); display: block; margin-bottom: 7px; }
+    table { width: 100%; border-collapse: collapse; background: var(--panel); margin: 20px 0; }
+    th, td { border-bottom: 1px solid var(--line); padding: 13px 15px; text-align: left; vertical-align: top; }
+    th { font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .code { white-space: pre; overflow-x: auto; background: #10231e; color: #d5e1dc; padding: 22px; font: 13px/1.6 var(--mono); }
+    .correction { border-left: 4px solid var(--green); padding-left: 18px; margin: 22px 0; }
+    .correction strong { color: var(--green); }
+    .checklist { columns: 2; column-gap: 48px; }
+    .checklist li { break-inside: avoid; margin-bottom: 8px; }
+    footer { background: var(--navy); color: #c8d3ce; padding: 36px max(24px, calc((100vw - 1180px)/2)); }
+    footer a { color: var(--mint); }
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: 1fr; }
+      .checklist { columns: 1; }
+      .links { display: none; }
+    }
+  </style>
 </head>
 <body>
-
-<div style="background:#EDEAE3">
-
-<div style="position:sticky;top:0;z-index:10;background:#EDEAE3;border-bottom:1px solid #DAD6CD">
-  <div style="max-width:1560px;margin:0 auto;padding:14px clamp(1.5rem,4vw,4rem);display:flex;align-items:center;justify-content:space-between;gap:16px 28px;flex-wrap:wrap">
-    <a href="https://entethalliance.org/" style="display:inline-flex;align-items:center;gap:16px">
-      <img src="data:image/webp;base64,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" alt="EEA" width="36" height="36" style="display:block;width:36px;height:36px;object-fit:contain">
-      <span aria-hidden="true" style="width:1px;height:24px;background:rgba(22,24,26,0.2)"></span>
-      <span style="display:inline-flex;flex-direction:column;gap:5px">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#5A645E">EEA Resource Hub</span>
-        <span style="display:flex;gap:2px;width:100%" aria-hidden="true"><i style="flex:1;height:3px;background:#EE9BFC"></i><i style="flex:1;height:3px;background:#F3CF2B"></i><i style="flex:1;height:3px;background:#FEABA0"></i></span>
-      </span>
-    </a>
-    <nav style="display:flex;align-items:center;gap:8px clamp(16px,2vw,26px);flex-wrap:wrap;font-family:'Kode Mono',ui-monospace,monospace;font-size:12px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase" aria-label="EEA Resource Hub">
-      <a href="https://entethalliance.github.io/ops-finance/index.html" style="color:#5A645E;padding-bottom:2px;border-bottom:2px solid transparent">Hub</a>
-      <a href="https://entethalliance.github.io/ops-finance/finance.html" style="color:#5A645E;padding-bottom:2px;border-bottom:2px solid transparent">Finance</a>
-      <a href="https://entethalliance.github.io/ops-finance/ethereum-101.html" style="color:#5A645E;padding-bottom:2px;border-bottom:2px solid transparent">Learn</a>
-      <a href="https://entethalliance.github.io/ops-finance/institutional-crypto-market.html" style="color:#5A645E;padding-bottom:2px;border-bottom:2px solid transparent">Institutional</a>
-      <a href="https://entethalliance.github.io/ops-finance/agents.html" style="color:#5A645E;padding-bottom:2px;border-bottom:2px solid transparent">Agents</a>
-      <a href="demo.html" style="color:#16181A;padding-bottom:2px;border-bottom:2px solid #1F5C4A">Demo</a>
-      <a href="https://github.com/EntEthAlliance/eea-rnd-ap2-ethereum-adapter" style="color:#5A645E;padding-bottom:2px;border-bottom:2px solid transparent">GitHub</a>
+  <header>
+    <nav>
+      <div class="brand">Enterprise Ethereum Alliance · R&amp;D</div>
+      <div class="links">
+        <a href="#scope">Scope</a>
+        <a href="#profiles">Profiles</a>
+        <a href="#security">Security</a>
+        <a href="demo.html">Demo</a>
+        <a href="https://github.com/EntEthAlliance/eea-rnd-ap2-ethereum-adapter">GitHub</a>
+      </div>
     </nav>
-  </div>
-  <div style="height:2px;background:#E3DFD7"><div id="progress-bar" style="height:2px;background:#1F5C4A;width:0%"></div></div>
-</div>
+  </header>
 
-<header style="min-height:calc(100vh - 62px);background:#10231E;color:#F2EEE5;display:flex;flex-direction:column;justify-content:space-between;gap:48px;padding:clamp(28px,4vw,56px) clamp(1.5rem,4vw,4rem) 0">
-  <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
-    <span style="display:flex;gap:2px;width:120px" aria-hidden="true"><i style="flex:1;height:4px;background:#EE9BFC"></i><i style="flex:1;height:4px;background:#F3CF2B"></i><i style="flex:1;height:4px;background:#FEABA0"></i></span>
-    <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:#9ADCC8">EEA Draft Specification</span>
-    <span style="flex:1;height:1px;background:#2A3D37;min-width:20px"></span>
-    <a href="https://entethalliance.org" target="_blank" rel="noopener" style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:#C1CBC6;border:1px solid #2A3D37;padding:8px 13px">entethalliance.org</a>
+  <div class="hero">
+    <div class="eyebrow">AP2 × Ethereum · Incubation draft</div>
+    <h1>Rialto</h1>
+    <div class="dek">A proposed Ethereum-specific extension for committing versioned AP2 artifacts, authorizing settlement, resolving optional trust attestations, and using optional ERC-20 job escrow.</div>
+    <div class="status">September 2026 · Not an adopted standard</div>
   </div>
 
-  <div id="hero-type" style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(20px,3vw,32px);padding:clamp(24px,5vw,64px) 0;max-width:1560px;width:100%;margin:0 auto">
-    <h1 style="font-size:clamp(46px,10.5vw,148px);line-height:0.92;font-weight:700;letter-spacing:-0.045em;margin:0;color:#F2EEE5;text-wrap:balance">Rialto</h1>
-    <div style="font-size:clamp(20px,2.6vw,34px);line-height:1.2;font-weight:600;letter-spacing:-0.02em;color:#9ADCC8">AP2-Ethereum Trust Adapter</div>
-    <p style="font-size:clamp(17px,2.1vw,25px);line-height:1.45;color:#C1CBC6;max-width:720px;margin:0;text-wrap:pretty">A neutral trust and adjudication layer for the Agent Payments Protocol, built on Ethereum attestation and escrow standards.</p>
-    <p style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:#7E8B85;margin:0">The Venice bridge where merchants verified counterparties before trading</p>
-  </div>
+  <main>
+    <div class="notice"><strong>Status matters.</strong> Rialto is not an adopted AP2, FIDO, EEA, EAS, or Ethereum standard and is not a deployed reference implementation. ERC-8004 and ERC-8183 are Draft ERCs. This page summarizes the reviewable design; the <a href="README.md">repository specification</a> is authoritative for this draft.</div>
 
-  <div style="max-width:1560px;width:100%;margin:0 auto;border-top:1px solid #2A3D37;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
-    <div style="padding:22px 24px 26px 0;border-right:1px solid #2A3D37"><div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.64rem;letter-spacing:0.18em;text-transform:uppercase;color:#7E8B85;margin-bottom:8px">Status</div><div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:1.05rem;color:#F2EEE5">Draft</div></div>
-    <div style="padding:22px 24px 26px;border-right:1px solid #2A3D37"><div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.64rem;letter-spacing:0.18em;text-transform:uppercase;color:#7E8B85;margin-bottom:8px">Published</div><div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:1.05rem;color:#F2EEE5">August 2026</div></div>
-    <div style="padding:22px 24px 26px;border-right:1px solid #2A3D37"><div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.64rem;letter-spacing:0.18em;text-transform:uppercase;color:#7E8B85;margin-bottom:8px">License</div><div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:1.05rem;color:#F2EEE5">CC BY 4.0</div></div>
-    <div style="padding:22px 0 26px 24px"><div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.64rem;letter-spacing:0.18em;text-transform:uppercase;color:#7E8B85;margin-bottom:8px">Slots open</div><div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:1.05rem;color:#9ADCC8">2</div></div>
-  </div>
-</header>
+    <section id="scope">
+      <h2>Narrower claims, stronger foundations</h2>
+      <p class="lead">AP2 defines authorization artifacts and verification responsibilities. Rialto explores how a verified AP2 transaction may opt into EVM settlement and related Ethereum infrastructure without redefining AP2 intent or claiming to cover non-EVM rails.</p>
+      <div class="correction"><strong>Correction:</strong> Ethereum settlement is an optional AP2-compatible profile, not a universal first-party AP2 rail. Rialto does not claim the same EIP-712 envelope applies to card, ACH, SEPA, or FedNow.</div>
+      <div class="correction"><strong>Correction:</strong> AP2 v0.2 uses versioned Checkout and Payment Mandates secured through SD-JWT. Rialto pins that model instead of mixing it with older Intent/Cart SDK types.</div>
+      <div class="correction"><strong>Correction:</strong> AP2 dispute evidence is distributed across several roles. Rialto supplements opted-in EVM flows; an on-chain digest does not make off-chain evidence available or adjudicate it.</div>
+    </section>
 
-<div id="counter-band" style="border-bottom:1px solid #DAD6CD;background:#EDEAE3">
-  <div style="max-width:1560px;margin:0 auto;padding:clamp(32px,4vw,60px) clamp(1.5rem,4vw,4rem);display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:#DAD6CD">
-    <div style="background:#EDEAE3;padding:0 26px 0 0;display:flex;flex-direction:column;gap:10px"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(30px,4.2vw,54px);line-height:1;letter-spacing:-0.02em;color:#16181A" data-count="200000" data-comma="1" data-suffix="+">200,000+</span><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:#5A645E;line-height:1.6">ERC-8004 agent identities registered</span></div>
-    <div style="background:#EDEAE3;padding:0 26px;display:flex;flex-direction:column;gap:10px"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(30px,4.2vw,54px);line-height:1;letter-spacing:-0.02em;color:#16181A" data-count="160" data-suffix="M+">160M+</span><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:#5A645E;line-height:1.6">x402 agentic payments, trailing year</span></div>
-    <div style="background:#EDEAE3;padding:0 26px;display:flex;flex-direction:column;gap:10px"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(30px,4.2vw,54px);line-height:1;letter-spacing:-0.02em;color:#16181A" data-count="60" data-suffix="+">60+</span><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:#5A645E;line-height:1.6">AP2 launch partners with Google</span></div>
-    <div style="background:#EDEAE3;padding:0 0 0 26px;display:flex;flex-direction:column;gap:10px"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(30px,4.2vw,54px);line-height:1;letter-spacing:-0.02em;color:#1F5C4A" data-count="2" data-suffix="">2</span><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:#5A645E;line-height:1.6">Slots still open, both governance</span></div>
-  </div>
-</div>
-
-<div style="max-width:1560px;margin:0 auto;padding:0 clamp(1.5rem,4vw,4rem) 0;display:flex;flex-wrap:wrap;gap:0 clamp(32px,4vw,72px);align-items:flex-start">
-
-  <nav class="toc" aria-label="Contents">
-    <div style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.2em;text-transform:uppercase;color:#8A9088;padding-bottom:12px;border-bottom:1px solid #DAD6CD;margin-bottom:14px">Contents</div>
-    <div class="toc-list">
-      <a href="#sec-why" data-toc="sec-why" style="display:flex;gap:12px;padding:8px 0 8px 10px;border-left:2px solid #DAD6CD;color:#5A645E;font-size:13.5px;line-height:1.35"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.1em;color:#8A9088;padding-top:2px">00</span><span>Why this matters</span></a>
-      <a href="#part-1" data-toc="part-1" style="display:flex;gap:12px;padding:8px 0 8px 10px;border-left:2px solid #DAD6CD;color:#5A645E;font-size:13.5px;line-height:1.35"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.1em;color:#8A9088;padding-top:2px">I</span><span>Where AP2 x Ethereum stands</span></a>
-      <a href="#part-2" data-toc="part-2" style="display:flex;gap:12px;padding:8px 0 8px 10px;border-left:2px solid #DAD6CD;color:#5A645E;font-size:13.5px;line-height:1.35"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.1em;color:#8A9088;padding-top:2px">II</span><span>The demand signal</span></a>
-      <a href="#part-3" data-toc="part-3" style="display:flex;gap:12px;padding:8px 0 8px 10px;border-left:2px solid #DAD6CD;color:#5A645E;font-size:13.5px;line-height:1.35"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.1em;color:#8A9088;padding-top:2px">III</span><span>The two open slots</span></a>
-      <a href="#part-4" data-toc="part-4" style="display:flex;gap:12px;padding:8px 0 8px 10px;border-left:2px solid #DAD6CD;color:#5A645E;font-size:13.5px;line-height:1.35"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.1em;color:#8A9088;padding-top:2px">IV</span><span>Technical specification</span></a>
-      <a href="#part-5" data-toc="part-5" style="display:flex;gap:12px;padding:8px 0 8px 10px;border-left:2px solid #DAD6CD;color:#5A645E;font-size:13.5px;line-height:1.35"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.1em;color:#8A9088;padding-top:2px">V</span><span>Governance path</span></a>
-      <a href="#recap" data-toc="recap" style="display:flex;gap:12px;padding:8px 0 8px 10px;border-left:2px solid #DAD6CD;color:#5A645E;font-size:13.5px;line-height:1.35"><span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.1em;color:#8A9088;padding-top:2px">—</span><span>The short version</span></a>
-    </div>
-  </nav>
-
-  <main id="doc-main" style="flex:1 1 620px;min-width:0;max-width:900px">
-
-  <section id="sec-why" style="padding:0 0 clamp(56px,7vw,88px)">
-    <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;border-top:2px solid #16181A;padding-top:14px;margin-bottom:22px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Why This Matters</span>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <p style="margin:0;font-size:19px;line-height:1.6;color:#16181A;text-wrap:pretty">AP2 has become the convergence point for agent payments, and its own community is now filing proposal after proposal for the two things it still lacks: a neutral trust registry and on-chain dispute adjudication. Every proposal is single-vendor. None has a home. That is a standards-body problem, and the EEA is the standards body.</p>
-      <p style="margin:0">The Agent Payments Protocol, launched by Google with 60+ partners and donated to the FIDO Alliance in April 2026, is the most widely backed standard for authorizing what an AI agent may buy on a human's behalf. Its partner list already includes MetaMask, Coinbase, and EigenLayer. Its payment layer already treats Ethereum rails as first-party: x402 stablecoin settlement ships as an official extension co-built with Coinbase and the Ethereum Foundation, and MetaMask's production delegation stack already grants agents scoped, revocable spending power over AP2 flows.</p>
-      <p style="margin:0">Two pieces are still missing, and AP2's specification says so itself: a trust registry beyond "manually curated allow-lists" (§ 3.2), and a root-of-trust mechanism it calls "a critical area for innovation" (§ 9), plus a dispute-evidence model that today amounts to the merchant holding a JSON file (§ 7.3). These are not engineering gaps. Coinbase and MetaMask closed the engineering gaps months ago. These two are governance gaps: whose attestation counts, and who both sides accept as judge. No vendor can answer those questions for its own competitors.</p>
-      <p style="margin:0">This document specifies the adapter that closes both, using the Ethereum Attestation Service, the EEA's Shibui framework, and the ERC-8183 escrow standard, and lays out the concrete path to land it: normative text to the FIDO AP2 working group, reference implementation to the AP2 repository, with the EEA carrying proposals the community is already writing but has no standing to submit.</p>
-      <aside style="background:#10231E;border:1px solid #10231E;border-top:3px solid #9ADCC8;padding:clamp(24px,3vw,34px);margin:10px 0;font-size:clamp(16px,1.6vw,18.5px);line-height:1.6;color:#C1CBC6">
-        <strong style="color:#9ADCC8">Three takeaways:</strong>
-        <ol style="margin:12px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:10px">
-          <li>AP2 and Ethereum are already one stack at the payment layer. The remaining work is the trust layer, and it is narrow, specific, and specifiable today.</li>
-          <li>Demand is documented in AP2's own issue tracker: independent builders are proposing on-chain mandate binding, escrow with proof-of-delivery, and attestation providers, all vendor-specific, all parked, because normative work must go through FIDO and individual contributors lack standing there.</li>
-          <li>The EEA's deliverable is two schemas and two registries, small enough to ship this quarter, neutral enough that competitors can all adopt them.</li>
-        </ol>
-      </aside>
-    </div>
-
-    <figure style="margin:32px 0 0;background:#F7F5F0;border:1px solid #C9C4B8;padding:0">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid #DAD6CD;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase">
-        <span style="color:#1F5C4A">Fig. 1</span><span style="color:#8A9088">AP2 × Ethereum status check</span>
+    <section id="profiles">
+      <h2>Four profiles, independently adoptable</h2>
+      <div class="grid">
+        <article class="card"><div class="number">PROFILE A</div><h3>AP2 Artifact Commitment</h3><p>Preserves the selected AP2 version's artifact type, digest algorithm, serialization rule, and transaction binding.</p></article>
+        <article class="card"><div class="number">PROFILE B</div><h3>EVM Settlement Authorization</h3><p>Uses a chain- and contract-bound EIP-712 authorization with explicit asset, payee, amount, nonce, deadline, and cap scope.</p></article>
+        <article class="card"><div class="number">PROFILE C</div><h3>EAS Trust Resolution</h3><p>Resolves registered attestation UIDs and applies Shibui-style topic, attester-authorization, expiry, revocation, and local policy checks.</p></article>
+        <article class="card"><div class="number">PROFILE D</div><h3>Optional ERC-8183 Escrow</h3><p>Supports compatible ERC-20 service jobs only, with explicit evidence, evaluator, timing, timeout, and fallback policy.</p></article>
       </div>
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:20px">
-      <svg viewBox="0 0 820 400" role="img" aria-label="AP2 by Ethereum status check: payment execution, delegated authorization, and mandate signing have shipped in production; trust registry and dispute evidence remain open and become Slots A and B of this specification." style="display:block;width:100%;height:auto;min-width:720px">
-        <defs><marker id="f1a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A645E"></path></marker></defs>
-        <g font-family="'Kode Mono', ui-monospace, monospace" font-size="10.5" letter-spacing="0.9" fill="#5A645E">
-        <text x="20" y="20">AP2 SLOT</text>
-        <text x="330" y="20">STATUS</text>
-        <text x="470" y="20">WHAT SHIPPED, OR WHERE IT GOES</text>
-        <rect x="20" y="36" width="290" height="40" fill="rgba(15,106,92,0.13)" stroke="rgba(15,106,92,0.55)"></rect>
-        <text x="34" y="61" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Payment execution</text>
-        <rect x="330" y="43" width="105" height="26" fill="#0F6A5C"></rect>
-        <text x="382" y="61" text-anchor="middle" font-weight="600" fill="#F7F5F0">SHIPPED</text>
-        <text x="470" y="54" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">x402 is a first-party AP2 payment method (a2a-x402)</text>
-        <text x="470" y="69">COINBASE · GOOGLE · ETHEREUM FOUNDATION</text>
-        <rect x="20" y="92" width="290" height="40" fill="rgba(15,106,92,0.13)" stroke="rgba(15,106,92,0.55)"></rect>
-        <text x="34" y="117" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Delegated authorization</text>
-        <rect x="330" y="99" width="105" height="26" fill="#0F6A5C"></rect>
-        <text x="382" y="117" text-anchor="middle" font-weight="600" fill="#F7F5F0">SHIPPED</text>
-        <text x="470" y="110" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">EIP-7702 + ERC-7710 + ERC-7715, shipping in production</text>
-        <text x="470" y="125">METAMASK DELEGATION FRAMEWORK · LIVE SINCE PECTRA</text>
-        <rect x="20" y="148" width="290" height="40" fill="rgba(15,106,92,0.13)" stroke="rgba(15,106,92,0.55)"></rect>
-        <text x="34" y="173" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Mandate signing</text>
-        <rect x="330" y="155" width="105" height="26" fill="#0F6A5C"></rect>
-        <text x="382" y="173" text-anchor="middle" font-weight="600" fill="#F7F5F0">SHIPPED</text>
-        <text x="470" y="166" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">EIP-712 typed signing, EIP-1271 fall-through for smart accounts</text>
-        <text x="470" y="181">ALREADY THE DEFAULT ACROSS AP2 PARTNER WALLETS</text>
-        <rect x="20" y="204" width="290" height="40" fill="rgba(146,64,14,0.13)" stroke="rgba(146,64,14,0.55)"></rect>
-        <text x="34" y="229" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Trust registry + root of trust</text>
-        <rect x="330" y="211" width="105" height="26" fill="#92400E"></rect>
-        <text x="382" y="229" text-anchor="middle" font-weight="600" fill="#F7F5F0">OPEN</text>
-        <text x="470" y="218" fill="#92400E">GOVERNANCE, NOT ENGINEERING</text>
-        <polyline points="445,224 770,224 770,314" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f1a)"></polyline>
-        <rect x="20" y="260" width="290" height="40" fill="rgba(146,64,14,0.13)" stroke="rgba(146,64,14,0.55)"></rect>
-        <text x="34" y="285" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Dispute evidence + adjudication</text>
-        <rect x="330" y="267" width="105" height="26" fill="#92400E"></rect>
-        <text x="382" y="285" text-anchor="middle" font-weight="600" fill="#F7F5F0">OPEN</text>
-        <text x="470" y="274" fill="#92400E">NEEDS A NEUTRAL REFEREE</text>
-        <polyline points="445,280 680,280 680,314" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f1a)"></polyline>
-        <rect x="330" y="322" width="470" height="56" fill="rgba(31,92,74,0.13)" stroke="rgba(31,92,74,0.55)"></rect>
-        <text x="346" y="345" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">This specification: Rialto</text>
-        <text x="346" y="364" fill="#1F5C4A">SLOT A · TRUST REGISTRY — SLOT B · DISPUTE EVIDENCE</text>
-        </g>
-      </svg>
+      <div class="flow" aria-label="Rialto processing flow">
+        <div><span>01</span>Verify AP2 presentation and required selective disclosures</div>
+        <div><span>02</span>Build a versioned AP2 artifact commitment</div>
+        <div><span>03</span>Verify chain-specific settlement authorization</div>
+        <div><span>04</span>Apply optional trust policy</div>
+        <div><span>05</span>Settle directly or use optional job escrow</div>
       </div>
-      <figcaption style="padding:14px 20px;border-top:1px solid #DAD6CD;font-size:13px;line-height:1.6;color:#5A645E">Fig. 1 — AP2 x Ethereum status check. The engineering slots shipped in production; the two governance slots become Slots A and B of this specification.</figcaption>
-    </figure>
-  </section>
+    </section>
 
-  <section id="part-1" style="padding:0 0 clamp(56px,7vw,88px)">
-    <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;border-top:2px solid #16181A;padding-top:14px;margin-bottom:20px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Part I</span>
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088">Where AP2 x Ethereum Stands Today</span>
-    </div>
-    <h2 style="font-size:clamp(28px,3.6vw,44px);line-height:1.05;letter-spacing:-0.025em;font-weight:700;margin:0 0 28px">Already shipped, already merged</h2>
+    <section id="commitment">
+      <h2>AP2 commitment, without a new hash fiction</h2>
+      <p>Rialto does not define <code>keccak256(canonical CartMandate / IntentMandate JSON)</code>. It preserves the selected AP2 artifact's hash semantics. AP2 v0.2 uses <code>checkout_hash</code> and <code>transaction_id</code>; proposed open-mandate conformance work currently uses SHA-256 over RFC 8785 canonicalized unsigned Open Checkout Mandate claims and is not yet normative for all artifact types.</p>
+      <table>
+        <thead><tr><th>Field</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>ap2Version</code></td><td>Pinned AP2 version identifier</td></tr>
+          <tr><td><code>artifactType</code></td><td>Hash of the exact versioned <code>vct</code></td></tr>
+          <tr><td><code>digestAlgorithm</code></td><td>Explicit algorithm registry value</td></tr>
+          <tr><td><code>artifactDigest</code></td><td>Digest produced by the applicable AP2 rule</td></tr>
+          <tr><td><code>transactionIdDigest</code></td><td>Fixed-size transaction binding where applicable</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px">
-        <li><strong style="color:#16181A">Payment execution.</strong> AP2's documentation names x402 as a payment method the protocol is "specifically designed to accommodate," and the a2a-x402 extension, co-built with Coinbase and the Ethereum Foundation, is the maintained integration. Ethereum stablecoin settlement is a first-party AP2 rail, not a bridge proposal.</li>
-        <li><strong style="color:#16181A">Delegated authorization.</strong> MetaMask's Delegation Framework stacks EIP-7702 (an EOA delegates code in place, live since Pectra, May 2025), ERC-7710 (the delegation interface), and ERC-7715 (the wallet permission-request standard). The wallet prompts once; the agent redeems scoped, capped, time-bound permission repeatedly. Production proof: Clawnch agents earned $1.2M in fees by February 2026, every dollar spent inside on-chain-enforced caveats on this exact stack, composed with AP2 and x402.</li>
-        <li><strong style="color:#16181A">Mandate signing.</strong> EIP-712 typed signing, with EIP-1271 fall-through for smart accounts, is already the default pattern across the wallet infrastructure AP2's partners ship. Community work on mandate-hash conformance (AP2 issue #265) is standardizing exactly the hash-derivation this depends on.</li>
+    <section id="authorization">
+      <h2>Portable structure, non-replayable signature</h2>
+      <p>The structure may be reused across EVM chains, but each signature is bound through the EIP-712 domain to <code>chainId</code> and <code>verifyingContract</code>. Cumulative caps are local to their authenticated accounting domain unless a separate cross-chain state protocol is specified.</p>
+      <div class="code">SettlementAuthorization {
+  ap2Version, artifactType, digestAlgorithm,
+  artifactDigest, transactionIdDigest,
+  payer, agent, payee, asset,
+  amount, perTransactionCap, cumulativeCap,
+  capScope, executionNonce, deadline
+}
+
+EIP712Domain {
+  name: "RialtoSettlement",
+  version, chainId, verifyingContract
+}</div>
+      <p>The consumer contract atomically consumes the nonce and updates any cap accounting before external effects. EIP-1271 is used for contract accounts. EIP-7702 is an execution primitive, not proof that a particular agent is authorized.</p>
+    </section>
+
+    <section id="trust">
+      <h2>EAS records claims; policy creates trust</h2>
+      <p>Core EAS retrieves attestations by UID. Rialto therefore uses an indexer or Shibui-style registry rather than the nonexistent <code>getAttestation(counterparty, schema)</code> call.</p>
+      <div class="code">resolve(subject, topic)
+  → obtain registered UID(s)
+  → EAS.getAttestation(uid)
+  → check schema, recipient, attester, expiry, revocation, payload
+  → check attester authorization and local trust policy</div>
+      <p>EAS-native <code>recipient</code>, <code>attester</code>, <code>expirationTime</code>, and revocation fields should not be duplicated in schema data. An optional ERC-8004 link uses the full <code>(agentRegistry, agentId)</code> pair, not a chain-ambiguous integer.</p>
+    </section>
+
+    <section id="escrow">
+      <h2>Escrow is optional and use-case specific</h2>
+      <p>ERC-8183 models an ERC-20-funded job with Open, Funded, Submitted, Completed, Rejected, and Expired states. It does not define card or bank settlement. It permits expiry refund from Funded or Submitted, so Rialto requires an explicit evaluation window and timeout policy.</p>
+      <p>A deliverable or reason hash proves integrity of later-presented evidence. It does not prove delivery, quality, availability, or legal sufficiency. Evaluator selection, conflicts, fees, outage, fallback, appeals, evidence access, and external consumer rights remain higher-level requirements.</p>
+    </section>
+
+    <section id="security">
+      <h2>Required before standards submission</h2>
+      <ul class="checklist">
+        <li>Versioned JSON schemas and Solidity interfaces</li>
+        <li>Exact EIP-712 type strings and known-answer vectors</li>
+        <li>AP2 base64url/raw-digest conversion vectors</li>
+        <li>Solidity, TypeScript, and Python cross-verification</li>
+        <li>Replay, nonce, expiry, cap, and signer-type tests</li>
+        <li>Payee and AP2 <code>cnf</code> identity-binding tests</li>
+        <li>EAS registration, revocation, replacement, and stale-index tests</li>
+        <li>ERC-8183 expiry-race and evaluator-failure tests</li>
+        <li>Threat model and privacy analysis</li>
+        <li>Registry and evaluator governance specification</li>
+        <li>Deployment and upgrade runbook</li>
+        <li>Independent smart-contract security review</li>
       </ul>
+    </section>
 
-      <h3 style="font-size:22px;font-weight:700;letter-spacing:-0.01em;color:#16181A;margin:16px 0 0">Adoption, measured honestly</h3>
-    </div>
-
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:20px 0 0">
-      <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;color:#3A423E;text-align:left;min-width:600px">
-        <tr style="border-bottom:1px solid #16181A">
-          <th style="padding:10px 16px 10px 0;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500;white-space:nowrap">Standard</th>
-          <th style="padding:10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Status</th>
-          <th style="padding:10px 0 10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Adoption as of August 2026</th>
-        </tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">ERC-8004</td><td style="padding:14px 16px;vertical-align:top">Live, mainnet since Jan 29, 2026</td><td style="padding:14px 0 14px 16px;vertical-align:top">200,000+ agent identities across 20+ chains in its first months. Raw registration count overstates depth of use, treat as reach.</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">x402</td><td style="padding:14px 16px;vertical-align:top">Live since May 2025</td><td style="padding:14px 0 14px 16px;vertical-align:top">160M+ agentic payments in the trailing year per Coinbase; 100M+ independently confirmed by Chainalysis through Q1 2026; over 90% of on-chain agentic stablecoin volume settles on Base. A March 2026 analysis flagged low organic daily volume and self-generated test traffic; the gap closed over subsequent months, but both figures circulate.</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">ERC-8183</td><td style="padding:14px 16px;vertical-align:top">Draft, February 2026</td><td style="padding:14px 0 14px 16px;vertical-align:top">Not yet Review or Final. Primary deployment: Virtuals Protocol on Base and Arbitrum; claimed 2M+ transactions, independently unverified.</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">EIP-7702</td><td style="padding:14px 16px;vertical-align:top">Live since Pectra, May 2025</td><td style="padding:14px 0 14px 16px;vertical-align:top">Foundation of MetaMask's and other wallets' in-place smart-account upgrades. Protocol-native account abstraction (EIP-7701 / 8141 / 8130) remains under debate for the Hegota upgrade, Considered not Scheduled, so 7702 is the primitive to build on now.</td></tr>
-      </table>
-    </div>
-  </section>
-
-  <section id="part-2" style="padding:0 0 clamp(56px,7vw,88px)">
-    <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;border-top:2px solid #16181A;padding-top:14px;margin-bottom:20px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Part II</span>
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088">The Demand Signal in AP2's Own Issue Tracker</span>
-    </div>
-    <h2 style="font-size:clamp(28px,3.6vw,44px);line-height:1.05;letter-spacing:-0.025em;font-weight:700;margin:0 0 28px">The community is already filing this exact layer</h2>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <p style="margin:0">The strongest evidence that the trust layer is the open frontier is not analysis, it is AP2's public issue tracker. Independent builders keep filing proposals for exactly this layer. A sample of currently open issues:</p>
-    </div>
-
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:20px 0 0">
-      <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;color:#3A423E;text-align:left;min-width:600px">
-        <tr style="border-bottom:1px solid #16181A">
-          <th style="padding:10px 16px 10px 0;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500;white-space:nowrap">Issue</th>
-          <th style="padding:10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">What it proposes</th>
-          <th style="padding:10px 0 10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">What it maps to</th>
-        </tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">#255 Mandate binding</td><td style="padding:14px 16px;vertical-align:top">A normative MandateEnvelope EIP-712 typehash verified at the token contract: principal and agent signatures with EIP-1271 fall-through, per-transaction and cumulative caps, asset allowlist, expiry, sanctions and Travel Rule attestations, typed refusal reasons. Shipped as a reference stablecoin (RIVR).</td><td style="padding:14px 0 14px 16px;vertical-align:top">Mandate binding, the cross-cutting primitive both open slots need</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">#224 PactEscrow</td><td style="padding:14px 16px;vertical-align:top">Trustless on-chain escrow for AP2: proof-of-delivery before payment release.</td><td style="padding:14px 0 14px 16px;vertical-align:top">Slot B, dispute evidence, single-vendor version</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">#280 BlindOracle</td><td style="padding:14px 16px;vertical-align:top">An agent-trust verification and attestation provider added to the AP2 ecosystem.</td><td style="padding:14px 0 14px 16px;vertical-align:top">Slot A, trust registry, single-vendor version</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">#293 Proof-of-when</td><td style="padding:14px 16px;vertical-align:top">Optional chain-anchored timestamping of signed mandates, outside the signed bytes (Bitcoin-anchored).</td><td style="padding:14px 0 14px 16px;vertical-align:top">Chain-anchored evidence, same instinct, different chain</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">#290 Action record</td><td style="padding:14px 16px;vertical-align:top">A verifiable audit trail of agent actions after the Checkout Receipt.</td><td style="padding:14px 0 14px 16px;vertical-align:top">Slot B, evidence chain beyond the payment moment</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">#265 Conformance vectors</td><td style="padding:14px 16px;vertical-align:top">Cross-implementation test vectors for open_mandate_hash derivation.</td><td style="padding:14px 0 14px 16px;vertical-align:top">The hash-derivation layer on-chain binding depends on</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">#268 / #250 / #259</td><td style="padding:14px 16px;vertical-align:top">Signing-layer friction: JWT algorithm constraints forcing dual keys; a post-quantum (ML-DSA-65) extension; issuer-field enforcement in SD-JWT.</td><td style="padding:14px 0 14px 16px;vertical-align:top">Signature agility, why an optional EIP-712 path fits AP2's direction</td></tr>
-      </table>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px;margin-top:24px">
-      <h3 style="font-size:22px;font-weight:700;letter-spacing:-0.01em;color:#16181A;margin:0">The pattern, and the blocker</h3>
-      <p style="margin:0">Every one of these proposals is vendor-specific (PactEscrow, BlindOracle, RIVR) and every one is parked. The reason is structural, and issue #255 states it outright: the AP2 repository's scope is samples and SDK only; normative specification work belongs to the FIDO working group; and the author notes that FIDO liaison membership must wait until a legal entity exists, so the contribution sits filed "as an individual."</p>
-      <aside style="background:#10231E;border:1px solid #10231E;border-top:3px solid #9ADCC8;padding:clamp(24px,3vw,34px);margin:10px 0;font-size:clamp(17px,1.7vw,20px);line-height:1.55;color:#C1CBC6"><strong style="color:#9ADCC8">Read that again as a standards body:</strong> demand is proven, multiple independent parties are building the same two missing layers. Convergence is absent, each ships its own incompatible envelope. Standing is the bottleneck, the builders cannot carry their own work into the venue that decides. Those are precisely the three conditions under which a neutral standards organization exists to act.</aside>
-      <p style="margin:0">The EEA's role is therefore not to invent the trust layer from zero. It is to converge what the community is already building into one neutral schema set, and to carry it, with institutional standing, into the FIDO AP2 working group where individual contributors cannot.</p>
-    </div>
-  </section>
-
-  <section id="part-3" style="padding:0 0 clamp(56px,7vw,88px)">
-    <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;border-top:2px solid #16181A;padding-top:14px;margin-bottom:20px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Part III</span>
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088">The Two Open Slots</span>
-    </div>
-    <h2 style="font-size:clamp(28px,3.6vw,44px);line-height:1.05;letter-spacing:-0.025em;font-weight:700;margin:0 0 28px">What's engineering, what's governance</h2>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <p style="margin:0">The slots that closed, payment execution, delegation, signing, were engineering problems: one company with the incentive could ship the answer. The two that remain are different in kind.</p>
-      <ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px">
-        <li><strong style="color:#16181A">Whose attestation counts?</strong> A registry that only Google, or only Coinbase, or only one startup recognizes just relocates the lock-in AP2 was designed to avoid. Multiple institutions must agree on shared attestation rules, which is a negotiation, not a deployment.</li>
-        <li><strong style="color:#16181A">Who is the judge?</strong> A card network's adjudicator will not automatically recognize an on-chain evaluator one counterparty picked unilaterally. Mutual recognition of a judge is an institutional agreement; a smart contract can enforce the verdict, not the recognition.</li>
-      </ul>
-      <p style="margin:0">AP2's specification leaves exactly these two open:</p>
-    </div>
-
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:20px 0 0">
-      <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;color:#3A423E;text-align:left;min-width:560px">
-        <tr style="border-bottom:1px solid #16181A">
-          <th style="padding:10px 16px 10px 0;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500;white-space:nowrap">AP2 section</th>
-          <th style="padding:10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Open slot</th>
-          <th style="padding:10px 0 10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Current state</th>
-        </tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">§ 3.2</td><td style="padding:14px 16px;vertical-align:top">Trust registry</td><td style="padding:14px 0 14px 16px;vertical-align:top">Manually curated allow-lists; bilateral trust, O(n²) relationships at scale.</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">§ 9</td><td style="padding:14px 16px;vertical-align:top">Root of trust</td><td style="padding:14px 0 14px 16px;vertical-align:top">No defined mechanism for why a signing key should be trusted, "a critical area for innovation."</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">§ 6 / § 7.3</td><td style="padding:14px 16px;vertical-align:top">Dispute evidence</td><td style="padding:14px 0 14px 16px;vertical-align:top">Merchant holds the signed JSON mandates and presents them during representment; sole custodian, no independent verification.</td></tr>
-      </table>
-    </div>
-  </section>
-
-  <section id="part-4" style="padding:0 0 clamp(56px,7vw,88px)">
-    <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;border-top:2px solid #16181A;padding-top:14px;margin-bottom:20px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Part IV</span>
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088">Technical Specification</span>
-    </div>
-    <h2 style="font-size:clamp(28px,3.6vw,44px);line-height:1.05;letter-spacing:-0.025em;font-weight:700;margin:0 0 28px">Two schemas, one shared trust layer</h2>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <p style="margin:0">Both slots resolve on shared infrastructure: the Ethereum Attestation Service (EAS), deployed across mainnet and major L2s, permissionless, token-free, with the EEA's Shibui framework providing the institutional semantics on top. One cross-cutting primitive, the mandate binding, serves both.</p>
-    </div>
-
-    <figure style="margin:28px 0 32px;background:#F7F5F0;border:1px solid #C9C4B8;padding:0">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid #DAD6CD;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase">
-        <span style="color:#1F5C4A">Fig. 2</span><span style="color:#8A9088">The adapter end to end</span>
-      </div>
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:20px">
-      <svg viewBox="0 0 820 340" role="img" aria-label="The adapter end to end: shipped AP2 rails, signed mandates, payment execution and delegated spending, opt in to Rialto, where the MandateEnvelope binding serves Slot A and Slot B, and both slots land on the Ethereum trust layer of EAS with Shibui, ERC-8183 and ERC-8004." style="display:block;width:100%;height:auto;min-width:720px">
-        <defs><marker id="f3a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A645E"></path></marker></defs>
-        <g font-family="'Kode Mono', ui-monospace, monospace" font-size="10.5" letter-spacing="0.9" fill="#5A645E">
-        <text x="20" y="24">AP2 RAILS — SHIPPED</text>
-        <text x="330" y="24" fill="#1F5C4A">THIS SPEC — RIALTO</text>
-        <text x="650" y="24">ETHEREUM TRUST LAYER</text>
-        <rect x="20" y="40" width="200" height="48" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="34" y="60" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Signed mandates</text>
-        <text x="34" y="76">EIP-712 TYPED SIGNING</text>
-        <rect x="20" y="104" width="200" height="48" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="34" y="124" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Payment execution</text>
-        <text x="34" y="140">X402 · A2A-X402</text>
-        <rect x="20" y="168" width="200" height="48" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="34" y="188" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Delegated spending</text>
-        <text x="34" y="204">EIP-7702 + ERC-7710/7715</text>
-        <line x1="220" y1="64" x2="252" y2="64" stroke="#5A645E" fill="none" stroke-width="1.6"></line>
-        <line x1="220" y1="128" x2="252" y2="128" stroke="#5A645E" fill="none" stroke-width="1.6"></line>
-        <line x1="220" y1="192" x2="252" y2="192" stroke="#5A645E" fill="none" stroke-width="1.6"></line>
-        <line x1="252" y1="64" x2="252" y2="192" stroke="#5A645E" fill="none" stroke-width="1.6"></line>
-        <line x1="252" y1="128" x2="316" y2="128" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f3a)"></line>
-        <text x="258" y="120">OPT-IN</text>
-        <text x="20" y="240">THE AP2 MESSAGE FORMAT DOES NOT CHANGE</text>
-        <rect x="322" y="44" width="246" height="228" fill="rgba(31,92,74,0.13)" stroke="rgba(31,92,74,0.55)"></rect>
-        <rect x="334" y="54" width="222" height="40" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="348" y="71" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">MandateEnvelope binding</text>
-        <text x="348" y="87">EIP-712 TYPEHASH · MANDATEHASH</text>
-        <rect x="334" y="104" width="222" height="68" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="348" y="124" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Slot A — Trust registry</text>
-        <text x="348" y="142">AGENTAUTHORIZATIONSCHEMA ON EAS</text>
-        <text x="348" y="158">EEA TRUSTED-ATTESTER REGISTRY</text>
-        <rect x="334" y="182" width="222" height="68" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="348" y="202" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Slot B — Dispute evidence</text>
-        <text x="348" y="220">ERC-8183 JOB · MANDATEHASH</text>
-        <text x="348" y="236">RECOGNIZED-EVALUATOR REGISTRY</text>
-        <rect x="650" y="114" width="150" height="48" fill="rgba(21,94,117,0.13)" stroke="rgba(21,94,117,0.55)"></rect>
-        <text x="664" y="134" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">EAS + Shibui</text>
-        <text x="664" y="150" fill="#155E75">ATTESTATIONS</text>
-        <rect x="650" y="192" width="150" height="48" fill="rgba(21,94,117,0.13)" stroke="rgba(21,94,117,0.55)"></rect>
-        <text x="664" y="212" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">ERC-8183</text>
-        <text x="664" y="228" fill="#155E75">ESCROWED JOBS</text>
-        <rect x="650" y="272" width="150" height="48" fill="rgba(21,94,117,0.13)" stroke="rgba(21,94,117,0.55)"></rect>
-        <text x="664" y="292" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">ERC-8004</text>
-        <text x="664" y="308" fill="#155E75">REPUTATION</text>
-        <line x1="568" y1="138" x2="644" y2="138" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f3a)"></line>
-        <text x="606" y="130" text-anchor="middle">SCHEMA</text>
-        <line x1="568" y1="216" x2="644" y2="216" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f3a)"></line>
-        <text x="606" y="200" text-anchor="middle">EVIDENCE +</text>
-        <text x="606" y="211" text-anchor="middle">VERDICT</text>
-        <polyline points="445,250 445,296 644,296" stroke="#5A645E" fill="none" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#f3a)"></polyline>
-        <text x="470" y="290">PROPOSED REPUTATION WRITE</text>
-        </g>
-      </svg>
-      </div>
-      <figcaption style="padding:14px 20px;border-top:1px solid #DAD6CD;font-size:13px;line-height:1.6;color:#5A645E">Fig. 2 — The adapter end to end. Shipped AP2 rails opt in; the MandateEnvelope binding and Slots A and B are the only new pieces; both slots land on the same Ethereum trust layer. The reputation write is proposed, not yet standardized.</figcaption>
-    </figure>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <h3 style="font-size:22px;font-weight:700;letter-spacing:-0.01em;color:#16181A;margin:0">Cross-cutting primitive: the MandateEnvelope binding</h3>
-      <p style="margin:0">Everything on-chain keys off one artifact: a canonical, chain-agnostic binding of the AP2 mandate. Community work has already converged on the shape: issue #255 proposes a normative MandateEnvelope EIP-712 typehash so agents can target multiple chains without reshaping the mandate, and issue #265 is building the cross-implementation conformance vectors for mandate-hash derivation it depends on.</p>
-    </div>
-
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:20px 0 0">
-      <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;color:#3A423E;text-align:left;min-width:560px">
-        <tr style="border-bottom:1px solid #16181A">
-          <th style="padding:10px 16px 10px 0;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500;white-space:nowrap">Field</th>
-          <th style="padding:10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Type</th>
-          <th style="padding:10px 0 10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Description</th>
-        </tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">mandateHash</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">bytes32</td><td style="padding:14px 0 14px 16px;vertical-align:top">keccak256 of the canonical AP2 CartMandate / IntentMandate JSON, per the #265 conformance derivation</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">payer</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">address</td><td style="padding:14px 0 14px 16px;vertical-align:top">Principal's address: EOA, EIP-7702-delegated EOA, or smart account (EIP-1271 verification fall-through)</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">agent</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">address</td><td style="padding:14px 0 14px 16px;vertical-align:top">Executing agent's address; resolvable against ERC-8004 identity</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">merchant</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">address</td><td style="padding:14px 0 14px 16px;vertical-align:top">Merchant's attested address</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">maxAmount</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">uint256</td><td style="padding:14px 0 14px 16px;vertical-align:top">Per-transaction cap, smallest currency unit</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">cumulativeCap</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">uint256</td><td style="padding:14px 0 14px 16px;vertical-align:top">Total cap across the mandate's lifetime</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">deadline</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">uint64</td><td style="padding:14px 0 14px 16px;vertical-align:top">Unix expiry, the AP2 TTL</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">nonce</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">uint256</td><td style="padding:14px 0 14px 16px;vertical-align:top">Replay protection</td></tr>
-      </table>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px;margin-top:20px">
-      <p style="margin:0">The EEA's contribution here is standardization, not invention: adopt the community shape, publish it as the neutral normative typehash with test vectors, and align the AP2 SDK's emitted schema against it so one envelope serves every compliant chain and every rail.</p>
-    </div>
-
-    <div style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #DAD6CD;padding-top:16px;margin:36px 0 18px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Slot A</span>
-      <h3 style="font-size:clamp(22px,2.4vw,28px);font-weight:700;letter-spacing:-0.015em;color:#16181A;margin:0">Trust Registry and Root of Trust</h3>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <p style="margin:0"><strong style="color:#16181A">Interface.</strong> A Shibui-based EAS schema, <code style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.88em;background:#E3DFD7;padding:1px 5px">AgentAuthorizationSchema</code>, lets any recognized institution publish one signed, revocable, on-chain claim about an address. Trust resolution becomes a single read instead of a bilateral agreement.</p>
-    </div>
-
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:20px 0 0">
-      <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;color:#3A423E;text-align:left;min-width:560px">
-        <tr style="border-bottom:1px solid #16181A">
-          <th style="padding:10px 16px 10px 0;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500;white-space:nowrap">Field</th>
-          <th style="padding:10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Type</th>
-          <th style="padding:10px 0 10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Description</th>
-        </tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">agentAddress</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">address</td><td style="padding:14px 0 14px 16px;vertical-align:top">The AP2 participant's Ethereum address</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">agentRole</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">bytes32</td><td style="padding:14px 0 14px 16px;vertical-align:top">SHOPPING_AGENT | CREDENTIALS_PROVIDER | MERCHANT</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">ap2AgentCardURI</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">string</td><td style="padding:14px 0 14px 16px;vertical-align:top">URI of the AP2 agent card JSON</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">erc8004Id</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">uint256</td><td style="padding:14px 0 14px 16px;vertical-align:top">Optional link to the agent's ERC-8004 identity token</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">authorizedBy</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">address</td><td style="padding:14px 0 14px 16px;vertical-align:top">Attesting institution: card network, EEA member, regulator-recognized body</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">validUntil</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">uint64</td><td style="padding:14px 0 14px 16px;vertical-align:top">Expiry</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">revocable</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">bool</td><td style="padding:14px 0 14px 16px;vertical-align:top">Whether the attester may revoke</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:13px">extensionData</td><td style="padding:14px 16px;vertical-align:top;font-family:'Kode Mono',ui-monospace,monospace;font-size:12.5px;color:#5A645E">bytes</td><td style="padding:14px 0 14px 16px;vertical-align:top">Optional agent-attestation payload: model id and version, TEE attestation hash, policy-compliance proof, aligned with the taxonomy proposed in issue #255</td></tr>
-      </table>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px;margin-top:20px">
-      <p style="margin:0">Resolution mirrors Shibui's existing ERC-3643 border check. A Shopping Agent calls <code style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.88em;background:#E3DFD7;padding:1px 5px">EAS.getAttestation(counterparty, AgentAuthorizationSchema)</code>; the check passes if the attestation exists, is unexpired and unrevoked, and its issuer is in the agent's trusted-attester set. <code style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.88em;background:#E3DFD7;padding:1px 5px">addTrustedAttester()</code>, already defined in Shibui for token issuers, plays the identical role for AP2 participants: each institution keeps sovereign control of its own trust perimeter while sharing one registry.</p>
-    </div>
-
-    <figure style="margin:28px 0 0;background:#F7F5F0;border:1px solid #C9C4B8;padding:0">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid #DAD6CD;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase">
-        <span style="color:#1F5C4A">Fig. 3</span><span style="color:#8A9088">Slot A · attest once, read anywhere</span>
-      </div>
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:20px">
-      <svg viewBox="0 0 820 285" role="img" aria-label="Slot A comparison: today, bilateral allow-lists form a full mesh with order n squared relationships at scale; with Slot A, institutions attest once into the EAS registry and any counterparty resolves trust with one getAttestation read." style="display:block;width:100%;height:auto;min-width:720px">
-        <defs><marker id="f4a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A645E"></path></marker></defs>
-        <g font-family="'Kode Mono', ui-monospace, monospace" font-size="10.5" letter-spacing="0.9" fill="#5A645E">
-        <text x="20" y="24">TODAY — BILATERAL ALLOW-LISTS</text>
-        <line x1="170" y1="74" x2="98" y2="127" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="170" y1="74" x2="125" y2="212" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="170" y1="74" x2="215" y2="212" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="170" y1="74" x2="242" y2="127" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="98" y1="127" x2="125" y2="212" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="98" y1="127" x2="215" y2="212" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="98" y1="127" x2="242" y2="127" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="125" y1="212" x2="215" y2="212" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="125" y1="212" x2="242" y2="127" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <line x1="215" y1="212" x2="242" y2="127" stroke="#5A645E" stroke-opacity="0.5"></line>
-        <circle cx="170" cy="74" r="7" fill="#FFFDF8" stroke="#C9C4B8"></circle>
-        <circle cx="98" cy="127" r="7" fill="#FFFDF8" stroke="#C9C4B8"></circle>
-        <circle cx="125" cy="212" r="7" fill="#FFFDF8" stroke="#C9C4B8"></circle>
-        <circle cx="215" cy="212" r="7" fill="#FFFDF8" stroke="#C9C4B8"></circle>
-        <circle cx="242" cy="127" r="7" fill="#FFFDF8" stroke="#C9C4B8"></circle>
-        <text x="170" y="250" text-anchor="middle">TRUST DOES NOT TRANSFER</text>
-        <text x="170" y="264" text-anchor="middle">BILATERAL TRUST · O(N²) RELATIONSHIPS AT SCALE</text>
-        <line x1="400" y1="20" x2="400" y2="270" stroke="#DAD6CD"></line>
-        <text x="430" y="24">SLOT A — ATTEST ONCE, READ ANYWHERE</text>
-        <rect x="430" y="48" width="145" height="34" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="442" y="69" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">Card network</text>
-        <rect x="430" y="94" width="145" height="34" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="442" y="115" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">Government authority</text>
-        <rect x="430" y="140" width="145" height="34" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="442" y="161" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">EEA as trust anchor</text>
-        <text x="576" y="44" fill="#1F5C4A">ATTEST ONCE</text>
-        <polyline points="575,65 598,65 598,98 614,98" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f4a)"></polyline>
-        <line x1="575" y1="111" x2="614" y2="111" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f4a)"></line>
-        <polyline points="575,157 598,157 598,124 614,124" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f4a)"></polyline>
-        <rect x="620" y="76" width="180" height="76" fill="rgba(21,94,117,0.13)" stroke="rgba(21,94,117,0.55)"></rect>
-        <text x="634" y="100" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">EAS registry</text>
-        <text x="634" y="118" fill="#155E75">AGENTAUTHORIZATIONSCHEMA</text>
-        <text x="634" y="134" fill="#155E75">SIGNED · REVOCABLE</text>
-        <line x1="710" y1="210" x2="710" y2="158" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f4a)"></line>
-        <text x="700" y="186" text-anchor="end">ONE GETATTESTATION() READ</text>
-        <rect x="620" y="210" width="180" height="40" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="634" y="228" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Any counterparty</text>
-        <text x="634" y="243">SHARED ATTESTER SET</text>
-        </g>
-      </svg>
-      </div>
-      <figcaption style="padding:14px 20px;border-top:1px solid #DAD6CD;font-size:13px;line-height:1.6;color:#5A645E">Fig. 3 — Slot A replaces pairwise allow-lists with one attestation: valid if unexpired, unrevoked, and issued by an attester in the reader's trusted set. addTrustedAttester() plays the same role as in Shibui's ERC-3643 border check.</figcaption>
-    </figure>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px;margin-top:24px">
-      <aside style="background:#10231E;border:1px solid #10231E;border-top:3px solid #9ADCC8;padding:clamp(24px,3vw,34px);font-size:clamp(17px,1.7vw,20px);line-height:1.55;color:#C1CBC6"><strong style="color:#9ADCC8">Root of trust, same mechanism, one level up:</strong> AP2 § 9 asks why any signing key should be trusted. The answer is an attestation about the key's address, issued by whichever root the ecosystem recognizes: a card network, a government authority, or the EEA as trust-anchor registrar. A governance decision, not new cryptography.</aside>
-      <p style="margin:0"><strong style="color:#16181A">Backward compatibility.</strong> AP2 agent cards gain one optional <code style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.88em;background:#E3DFD7;padding:1px 5px">ethereumAddress</code> field. Participants without Ethereum infrastructure keep their allow-lists untouched; the message format does not change.</p>
-    </div>
-
-    <div style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #DAD6CD;padding-top:16px;margin:36px 0 18px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Slot B</span>
-      <h3 style="font-size:clamp(22px,2.4vw,28px);font-weight:700;letter-spacing:-0.015em;color:#16181A;margin:0">Dispute Evidence and Adjudication</h3>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <p style="margin:0"><strong style="color:#16181A">Interface.</strong> ERC-8183 (Draft, February 2026, Ethereum Foundation dAI team and Virtuals Protocol) defines the needed shape exactly: a Client funds a Job, a Provider submits work, and a single Evaluator alone marks it complete or rejected, across four states. For an AP2 transaction using Ethereum signing, the Shopping Agent optionally opens a Job keyed to the MandateEnvelope's <code style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.88em;background:#E3DFD7;padding:1px 5px">mandateHash</code>.</p>
-    </div>
-
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:20px 0 0">
-      <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;color:#3A423E;text-align:left;min-width:560px">
-        <tr style="border-bottom:1px solid #16181A">
-          <th style="padding:10px 16px 10px 0;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500;white-space:nowrap">ERC-8183 state</th>
-          <th style="padding:10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">Trigger</th>
-          <th style="padding:10px 0 10px 16px;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088;font-weight:500">AP2 equivalent</th>
-        </tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">Open</td><td style="padding:14px 16px;vertical-align:top">mandateHash published; funds not yet locked</td><td style="padding:14px 0 14px 16px;vertical-align:top">Cart created, not yet authorized</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">Funded</td><td style="padding:14px 16px;vertical-align:top">Tokens escrowed, linked to the PaymentMandate</td><td style="padding:14px 0 14px 16px;vertical-align:top">Payment authorized</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">Submitted</td><td style="padding:14px 16px;vertical-align:top">Merchant posts the delivery attestation as deliverable</td><td style="padding:14px 0 14px 16px;vertical-align:top">Order fulfilled</td></tr>
-        <tr style="border-bottom:1px solid #DAD6CD"><td style="padding:14px 16px 14px 0;color:#16181A;font-weight:600;white-space:nowrap;vertical-align:top">Terminal</td><td style="padding:14px 16px;vertical-align:top">Evaluator confirms or rejects; funds release or return</td><td style="padding:14px 0 14px 16px;vertical-align:top">Dispute resolved</td></tr>
-      </table>
-    </div>
-
-    <figure style="margin:28px 0 0;background:#F7F5F0;border:1px solid #C9C4B8;padding:0">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid #DAD6CD;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase">
-        <span style="color:#1F5C4A">Fig. 4</span><span style="color:#8A9088">Slot B lifecycle</span>
-      </div>
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:20px">
-      <svg viewBox="0 0 900 215" role="img" aria-label="Slot B lifecycle: a Shopping Agent opens an ERC-8183 job keyed to the MandateEnvelope's mandateHash; it moves from Open to Funded when tokens are escrowed, to Submitted when the merchant posts the delivery attestation, to Terminal when the Evaluator confirms or rejects and funds release or return. A proposed, not yet standardized write feeds ERC-8004 reputation." style="display:block;width:100%;height:auto;min-width:720px">
-        <defs><marker id="f5a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5A645E"></path></marker></defs>
-        <g font-family="'Kode Mono', ui-monospace, monospace" font-size="10.5" letter-spacing="0.9" fill="#5A645E">
-        <text x="95" y="44" text-anchor="middle">SHOPPING AGENT OPENS,</text>
-        <text x="95" y="56" text-anchor="middle">KEYED TO THE MANDATEHASH</text>
-        <text x="240" y="44" text-anchor="middle" fill="#0F6A5C">PAYMENT TOKENS</text>
-        <text x="240" y="56" text-anchor="middle" fill="#0F6A5C">ESCROWED</text>
-        <text x="430" y="44" text-anchor="middle">MERCHANT POSTS</text>
-        <text x="430" y="56" text-anchor="middle">DELIVERY ATTESTATION</text>
-        <text x="650" y="44" text-anchor="middle" fill="#1F5C4A">EVALUATOR CONFIRMS</text>
-        <text x="650" y="56" text-anchor="middle" fill="#1F5C4A">OR REJECTS</text>
-        <rect x="20" y="70" width="160" height="68" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="34" y="94" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Open</text>
-        <text x="34" y="112" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">hash on-chain, not funded</text>
-        <text x="34" y="128">AP2 · CART CREATED</text>
-        <line x1="180" y1="104" x2="234" y2="104" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f5a)"></line>
-        <rect x="240" y="70" width="160" height="68" fill="rgba(15,106,92,0.13)" stroke="rgba(15,106,92,0.55)"></rect>
-        <text x="254" y="94" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Funded</text>
-        <text x="254" y="112" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">payment tokens escrowed</text>
-        <text x="254" y="128">AP2 · AUTHORIZED</text>
-        <line x1="400" y1="104" x2="454" y2="104" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f5a)"></line>
-        <rect x="460" y="70" width="160" height="68" fill="#FFFDF8" stroke="#C9C4B8"></rect>
-        <text x="474" y="94" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Submitted</text>
-        <text x="474" y="112" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">delivery attestation</text>
-        <text x="474" y="128">AP2 · ORDER FULFILLED</text>
-        <line x1="620" y1="104" x2="674" y2="104" stroke="#5A645E" fill="none" stroke-width="1.6" marker-end="url(#f5a)"></line>
-        <rect x="680" y="70" width="160" height="68" fill="rgba(31,92,74,0.13)" stroke="rgba(31,92,74,0.55)"></rect>
-        <text x="694" y="94" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">Terminal</text>
-        <text x="694" y="112" font-family="Inter, sans-serif" font-size="12" letter-spacing="0" fill="#5A645E">funds release or return</text>
-        <text x="694" y="128">AP2 · RESOLVED</text>
-        <polyline points="760,138 760,175 626,175" stroke="#5A645E" fill="none" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#f5a)"></polyline>
-        <rect x="420" y="155" width="200" height="40" fill="rgba(21,94,117,0.13)" stroke="rgba(21,94,117,0.55)"></rect>
-        <text x="434" y="173" font-family="Inter, sans-serif" font-size="14.5" font-weight="600" letter-spacing="0" fill="#16181A">ERC-8004 reputation</text>
-        <text x="434" y="188" fill="#155E75">COMPLETE() WRITE · PROPOSED</text>
-        </g>
-      </svg>
-      </div>
-      <figcaption style="padding:14px 20px;border-top:1px solid #DAD6CD;font-size:13px;line-height:1.6;color:#5A645E">Fig. 4 — Slot B lifecycle. An ERC-8183 job keyed to the MandateEnvelope's mandateHash moves through four states; only the pre-agreed Evaluator can close it. The write into ERC-8004 reputation is proposed, not yet standardized.</figcaption>
-    </figure>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px;margin-top:24px">
-      <p style="margin:0">The Evaluator is the governance object: a role both sides recognize in advance, a card network's dispute service, an EEA-recognized arbitration provider, or for narrow cases a rules-bound smart contract. The EEA maintains the recognized-evaluator registry as an EAS attestation set, exactly as it maintains the trusted-attester registry in Slot A. Community discussion on ERC-8183 is already proposing that an Evaluator's <code style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.88em;background:#E3DFD7;padding:1px 5px">complete()</code> call write into ERC-8004's Reputation Registry; the EEA should formalize that link, so every resolved AP2 dispute feeds the same on-chain track record any future counterparty checks.</p>
-      <aside style="background:#F7F5F0;border:1px solid #DAD6CD;border-top:2px solid #92400E;padding:22px 24px;font-size:15.5px;line-height:1.65;color:#3A423E"><strong style="color:#92400E">Draft status, stated plainly:</strong> ERC-8183 has not reached Review or Final. Its one meaningful production deployment is Virtuals Protocol's marketplace. Building on it now is the right call, Ethereum specs converge in public and early engagement shapes the terms, but it should be presented as co-development, not adoption of settled infrastructure.</aside>
-      <p style="margin:0"><strong style="color:#16181A">Backward compatibility.</strong> Job creation is at the Shopping Agent's discretion, per transaction. Every existing AP2 flow keeps merchant-held JSON evidence unchanged.</p>
-    </div>
-  </section>
-
-  <section id="part-5" style="padding:0 0 clamp(56px,7vw,88px)">
-    <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;border-top:2px solid #16181A;padding-top:14px;margin-bottom:20px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Part V</span>
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088">Governance Path</span>
-    </div>
-    <h2 style="font-size:clamp(28px,3.6vw,44px);line-height:1.05;letter-spacing:-0.025em;font-weight:700;margin:0 0 28px">Two tracks, four seats, one submission</h2>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px">
-      <p style="margin:0">AP2's contribution rules split the work cleanly, and the adapter follows the split rather than fighting it:</p>
-      <ul style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px">
-        <li><strong style="color:#16181A">Normative track (FIDO).</strong> The MandateEnvelope typehash, the AgentAuthorizationSchema, and the evaluator-registry model go to the FIDO Alliance AP2 working group as a proposed official extension, submitted with EEA institutional standing.</li>
-        <li><strong style="color:#16181A">Implementation track (GitHub).</strong> An open-source reference implementation and SDK-alignment evidence go to the AP2 repository, whose scope is exactly samples and SDK. This is also where the EEA picks up the community's existing work, #255's envelope, #265's conformance vectors, rather than duplicating it.</li>
-      </ul>
-
-      <h3 style="font-size:22px;font-weight:700;letter-spacing:-0.01em;color:#16181A;margin:16px 0 0">Working group</h3>
-      <p style="margin:0">Four seats define the minimum viable table: AP2 implementors from the FIDO working group; MetaMask (delegation stack); Coinbase (x402 and the a2a-x402 extension); Virtuals Protocol (the ERC-8183 production deployment). Independent builders already contributing, the authors of #255, #224, and #280, are invited in with the standing they currently lack. All outputs publish under Apache 2.0, implementable by any party without fee, under the EEA's existing antitrust-safe process.</p>
-
-      <h3 style="font-size:22px;font-weight:700;letter-spacing:-0.01em;color:#16181A;margin:16px 0 0">Deliverables and sequence</h3>
-    </div>
-
-    <div style="display:flex;flex-direction:column;max-width:760px;margin-top:18px;border-top:1px solid #DAD6CD">
-      <div style="display:flex;gap:20px;padding:16px 0;border-bottom:1px solid #DAD6CD">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;color:#1F5C4A;padding-top:5px;flex:0 0 24px">01</span>
-        <p style="margin:0;font-size:16.5px;line-height:1.65;color:#3A423E">Publish the AgentAuthorizationSchema and the recognized-evaluator registry schema on Ethereum mainnet and Base. Small, concrete, shippable this quarter.</p>
-      </div>
-      <div style="display:flex;gap:20px;padding:16px 0;border-bottom:1px solid #DAD6CD">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;color:#1F5C4A;padding-top:5px;flex:0 0 24px">02</span>
-        <p style="margin:0;font-size:16.5px;line-height:1.65;color:#3A423E">Publish the normative MandateEnvelope typehash with cross-implementation test vectors, aligned with the #265 conformance work and validated against the AP2 SDK's emitted schemas.</p>
-      </div>
-      <div style="display:flex;gap:20px;padding:16px 0;border-bottom:1px solid #DAD6CD">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;color:#1F5C4A;padding-top:5px;flex:0 0 24px">03</span>
-        <p style="margin:0;font-size:16.5px;line-height:1.65;color:#3A423E">Convene the working group and submit the extension proposal to the FIDO AP2 working group.</p>
-      </div>
-      <div style="display:flex;gap:20px;padding:16px 0;border-bottom:1px solid #DAD6CD">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;color:#1F5C4A;padding-top:5px;flex:0 0 24px">04</span>
-        <p style="margin:0;font-size:16.5px;line-height:1.65;color:#3A423E">Engage ERC-8183's public review process directly, including the 8183-to-8004 reputation write-back, so the standard finalizes with the adapter's requirements built in.</p>
-      </div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.72;color:#3A423E;max-width:760px;margin-top:24px">
-      <aside style="background:#10231E;border:1px solid #10231E;border-top:3px solid #9ADCC8;padding:clamp(24px,3vw,34px);font-size:clamp(17px,1.7vw,20px);line-height:1.55;color:#C1CBC6"><strong style="color:#9ADCC8">The one-line version for a board slide:</strong> AP2's community is already building the trust layer in fragments. The EEA converges the fragments into one neutral standard and carries it into the room where it becomes official. Two schemas, two registries, one submission.</aside>
-    </div>
-  </section>
-
-  <section id="recap" style="padding:0 0 clamp(64px,8vw,104px)">
-    <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;border-top:2px solid #16181A;padding-top:14px;margin-bottom:20px">
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#1F5C4A">Recap</span>
-      <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#8A9088">The Short Version</span>
-    </div>
-    <h2 style="font-size:clamp(28px,3.6vw,44px);line-height:1.05;letter-spacing:-0.025em;font-weight:700;margin:0 0 32px">The whole argument in six points</h2>
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:#2A3D37;border:1px solid #2A3D37">
-      <div style="background:#10231E;padding:clamp(24px,3vw,32px);display:flex;flex-direction:column;gap:14px">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(28px,3.2vw,40px);font-weight:500;color:#9ADCC8;line-height:1">01</span>
-        <p style="margin:0;font-size:16px;line-height:1.62;color:#C1CBC6">AP2, launched by Google with 60+ partners and donated to the FIDO Alliance in April 2026, is the most widely backed standard for agent payments, and its partner list already includes MetaMask, Coinbase, and EigenLayer.</p>
-      </div>
-      <div style="background:#10231E;padding:clamp(24px,3vw,32px);display:flex;flex-direction:column;gap:14px">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(28px,3.2vw,40px);font-weight:500;color:#9ADCC8;line-height:1">02</span>
-        <p style="margin:0;font-size:16px;line-height:1.62;color:#C1CBC6">The engineering slots are closed: x402 settlement ships as a first-party AP2 extension, MetaMask's delegation stack grants scoped spending in production, and EIP-712 signing is already the default.</p>
-      </div>
-      <div style="background:#10231E;padding:clamp(24px,3vw,32px);display:flex;flex-direction:column;gap:14px">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(28px,3.2vw,40px);font-weight:500;color:#9ADCC8;line-height:1">03</span>
-        <p style="margin:0;font-size:16px;line-height:1.62;color:#C1CBC6">Two governance slots remain open, and AP2's own spec says so: a trust registry beyond manual allow-lists, and a dispute-evidence model beyond a merchant-held JSON file. No vendor can referee its own competitors.</p>
-      </div>
-      <div style="background:#10231E;padding:clamp(24px,3vw,32px);display:flex;flex-direction:column;gap:14px">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(28px,3.2vw,40px);font-weight:500;color:#9ADCC8;line-height:1">04</span>
-        <p style="margin:0;font-size:16px;line-height:1.62;color:#C1CBC6">Demand is documented in AP2's issue tracker: independent builders keep filing single-vendor versions of exactly this layer, and every one is parked because normative work goes through FIDO, where individual contributors lack standing.</p>
-      </div>
-      <div style="background:#10231E;padding:clamp(24px,3vw,32px);display:flex;flex-direction:column;gap:14px">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(28px,3.2vw,40px);font-weight:500;color:#9ADCC8;line-height:1">05</span>
-        <p style="margin:0;font-size:16px;line-height:1.62;color:#C1CBC6">The adapter closes both slots on shared infrastructure: a MandateEnvelope binding, an AgentAuthorizationSchema on EAS with an EEA trusted-attester registry, and ERC-8183 escrow jobs with an EEA recognized-evaluator registry. All opt-in; the AP2 message format does not change.</p>
-      </div>
-      <div style="background:#10231E;padding:clamp(24px,3vw,32px);display:flex;flex-direction:column;gap:14px">
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:clamp(28px,3.2vw,40px);font-weight:500;color:#9ADCC8;line-height:1">06</span>
-        <p style="margin:0;font-size:16px;line-height:1.62;color:#C1CBC6">The path is two tracks and one submission: normative text to the FIDO AP2 working group with EEA standing, a reference implementation to the AP2 repository, and two schemas plus two registries shippable this quarter.</p>
-      </div>
-    </div>
-  </section>
-
+    <section id="path">
+      <h2>Proposed path</h2>
+      <ol>
+        <li>Align scope and terminology with AP2/FIDO contributors and related work such as Verifiable Intent.</li>
+        <li>Prototype Profiles A and B against pinned AP2 v0.2 fixtures on one EVM testnet.</li>
+        <li>Adapt Shibui's registered-UID and attester-authorization pattern for Profile C.</li>
+        <li>Prototype Profile D separately for an ERC-20 service-job flow.</li>
+        <li>Publish conformance vectors, a threat model, governance rules, and a security review before representing Rialto as implementation-ready.</li>
+      </ol>
+      <p>Read the <a href="README.md">complete incubation draft</a>, inspect the <a href="demo.html">illustrative demo</a>, or contribute on <a href="https://github.com/EntEthAlliance/eea-rnd-ap2-ethereum-adapter">GitHub</a>.</p>
+    </section>
   </main>
-</div>
 
-<footer style="background:#10231E;padding:3rem clamp(1.5rem,4vw,4rem)">
-  <div style="max-width:1200px;margin:0 auto;color:#C1CBC6;font-size:0.95rem;line-height:1.55">
-    <div style="display:flex;gap:2px;margin-bottom:1.6rem"><i style="flex:1;height:4px;background:#EE9BFC"></i><i style="flex:1;height:4px;background:#F3CF2B"></i><i style="flex:1;height:4px;background:#FEABA0"></i></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:20px 40px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-        <a href="https://entethalliance.org/" style="display:inline-flex;align-items:center"><img src="data:image/webp;base64,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" alt="Enterprise Ethereum Alliance" width="36" height="36" style="width:36px;height:36px;object-fit:contain"></a>
-        <span aria-hidden="true" style="width:1px;height:24px;background:#2A3D37"></span>
-        <span style="font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#7E8B85">Enterprise Ethereum Alliance · New York · 40.7431° N · 73.9897° W</span>
-      </div>
-      <div style="display:flex;gap:1.4rem;flex-wrap:wrap;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase">
-        <a href="https://x.com/EntEthAlliance" target="_blank" rel="noopener" style="color:#F2EEE5;border-bottom:1px solid #7E8B85">X</a>
-        <a href="https://www.linkedin.com/company/enterpriseethereumalliance/" target="_blank" rel="noopener" style="color:#F2EEE5;border-bottom:1px solid #7E8B85">LinkedIn</a>
-        <a href="https://lu.ma/eea.eth" target="_blank" rel="noopener" style="color:#F2EEE5;border-bottom:1px solid #7E8B85">Luma</a>
-      </div>
-    </div>
-    <div style="margin-top:1.6rem;font-family:'Kode Mono',ui-monospace,monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#7E8B85">© 2026 Enterprise Ethereum Alliance</div>
-  </div>
-</footer>
-
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  var ids = ['sec-why', 'part-1', 'part-2', 'part-3', 'part-4', 'part-5', 'recap'];
-  var bar = document.getElementById('progress-bar');
-  var links = {};
-  ids.forEach(function (id) { links[id] = document.querySelector('a[data-toc="' + id + '"]'); });
-  var active = null;
-  function onScroll() {
-    var y = window.scrollY + 180, cur = ids[0];
-    ids.forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el && el.getBoundingClientRect().top + window.scrollY <= y) cur = id;
-    });
-    if (cur !== active) {
-      ids.forEach(function (id) {
-        var a = links[id];
-        if (!a) return;
-        a.style.borderLeftColor = id === cur ? '#1F5C4A' : '#DAD6CD';
-        a.style.color = id === cur ? '#16181A' : '#5A645E';
-      });
-      active = cur;
-    }
-    if (bar) {
-      var d = document.documentElement;
-      var max = Math.max(1, d.scrollHeight - d.clientHeight);
-      bar.style.width = (Math.min(1, Math.max(0, window.scrollY / max)) * 100).toFixed(2) + '%';
-    }
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  onScroll();
-
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var ease = 'cubic-bezier(.2,.75,.25,1)';
-  function observe(el, fn) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { fn(e.target); io.unobserve(e.target); } });
-    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
-    io.observe(el);
-  }
-
-  var hero = document.getElementById('hero-type');
-  if (hero) {
-    Array.prototype.forEach.call(hero.children, function (el, i) {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(26px)';
-      el.style.transition = 'opacity .9s ' + ease + ' ' + (i * 130 + 60) + 'ms, transform .9s ' + ease + ' ' + (i * 130 + 60) + 'ms';
-    });
-    requestAnimationFrame(function () {
-      Array.prototype.forEach.call(hero.children, function (el) { el.style.opacity = '1'; el.style.transform = 'none'; });
-    });
-  }
-
-  var main = document.getElementById('doc-main');
-  if (main) {
-    main.querySelectorAll('section > *').forEach(function (el) {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity .75s ' + ease + ', transform .75s ' + ease;
-      observe(el, function (t) { t.style.opacity = '1'; t.style.transform = 'none'; });
-    });
-  }
-
-  document.querySelectorAll('figure svg > g').forEach(function (g) {
-    var kids = Array.prototype.slice.call(g.children);
-    kids.forEach(function (k) { k.style.opacity = '0'; k.style.transition = 'opacity .5s linear'; });
-    observe(g.closest('figure'), function () {
-      kids.forEach(function (k, i) { k.style.transitionDelay = (i * 26) + 'ms'; k.style.opacity = '1'; });
-    });
-  });
-
-  var band = document.getElementById('counter-band');
-  if (band) {
-    observe(band, function () {
-      band.querySelectorAll('[data-count]').forEach(function (el) {
-        var to = parseFloat(el.getAttribute('data-count'));
-        var suffix = el.getAttribute('data-suffix') || '';
-        var comma = el.getAttribute('data-comma') === '1';
-        var t0 = performance.now();
-        var dur = 1400;
-        function step(now) {
-          var p = Math.min(1, (now - t0) / dur);
-          var v = Math.round(to * (1 - Math.pow(1 - p, 3)));
-          el.textContent = (comma ? v.toLocaleString('en-US') : String(v)) + suffix;
-          if (p < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-      });
-    });
-  }
-});
-</script>
-
+  <footer>Enterprise Ethereum Alliance · Rialto incubation draft · September 2026 · Specification text CC BY 4.0 · Code Apache 2.0</footer>
 </body>
 </html>
