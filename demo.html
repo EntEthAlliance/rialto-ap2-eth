@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP2-Ethereum Trust Adapter — Interactive Demo</title>
+<style>
+  :root{
+    --paper:#EDF0F2; --panel:#FFFFFF; --ink:#16324C; --ink2:#4A6076;
+    --line:#D3DAE0; --teal:#0E6E56; --teal-bg:#E1F2EC;
+    --coral:#B3492B; --coral-bg:#F9ECE6;
+    --amber:#8A5A0A; --amber-bg:#F7EFDD;
+    --console:#0F2233; --console-txt:#C8D6E2; --console-ok:#6FD3AE; --console-err:#F0997B; --console-dim:#6C8299;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);line-height:1.45}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px 60px}
+
+  header{padding:26px 0 18px;display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:3px solid var(--ink)}
+  .brand{font-size:13px;font-weight:bold;letter-spacing:.02em;color:var(--ink2)}
+  h1{font-size:clamp(22px,3.4vw,32px);font-weight:bold;letter-spacing:-.01em}
+  .net{font-family:var(--mono);font-size:12px;color:var(--teal);background:var(--teal-bg);padding:4px 10px;border-radius:4px;white-space:nowrap}
+
+  .scenarios{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 10px}
+  .scen{border:1.5px solid var(--line);background:var(--panel);padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13.5px;font-family:inherit;color:var(--ink);text-align:left;min-width:150px;flex:1}
+  .scen small{display:block;color:var(--ink2);font-size:11.5px;margin-top:2px}
+  .scen.active{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+  .scen.f.active{border-color:var(--coral);box-shadow:inset 0 0 0 1px var(--coral)}
+
+  .controls{display:flex;gap:8px;margin:12px 0 24px;align-items:center;flex-wrap:wrap}
+  .btn{font-family:inherit;font-size:14px;font-weight:bold;padding:10px 22px;border-radius:8px;border:none;cursor:pointer}
+  .btn-run{background:var(--ink);color:#fff}
+  .btn-run:disabled{opacity:.45;cursor:default}
+  .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .hint{font-size:12.5px;color:var(--ink2)}
+
+  /* pipeline */
+  .rail{background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:26px 18px 20px;overflow-x:auto}
+  .rail-inner{display:flex;align-items:flex-start;min-width:860px}
+  .node{flex:1;text-align:center;position:relative;padding:0 6px}
+  .dot{width:52px;height:52px;border-radius:50%;border:2px solid var(--line);background:var(--paper);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:21px;transition:all .25s}
+  .node.on .dot{border-color:var(--ink);background:#fff;box-shadow:0 0 0 5px rgba(22,50,76,.12)}
+  .node.ok .dot{border-color:var(--teal);background:var(--teal-bg)}
+  .node.err .dot{border-color:var(--coral);background:var(--coral-bg)}
+  .nlabel{font-size:12.5px;font-weight:bold}
+  .nsub{font-size:10.5px;color:var(--ink2);font-family:var(--mono)}
+  .link{position:absolute;top:26px;left:calc(50% + 30px);right:calc(-50% + 30px);height:2px;background:var(--line);transition:background .25s}
+  .node.ok .link{background:var(--teal)}
+  .node.err .link{background:var(--coral)}
+  .node:last-child .link{display:none}
+
+  /* main grid */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+
+  .stepcard{background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:20px 22px;min-height:330px}
+  .stepno{font-family:var(--mono);font-size:12px;color:var(--ink2);margin-bottom:6px}
+  .steptitle{font-size:19px;font-weight:bold;margin-bottom:8px}
+  .stepdesc{font-size:14px;color:var(--ink2);margin-bottom:14px;max-width:52ch}
+  .verdict{display:inline-block;font-size:12.5px;font-weight:bold;padding:5px 12px;border-radius:5px;margin-bottom:14px}
+  .verdict.ok{background:var(--teal-bg);color:var(--teal)}
+  .verdict.err{background:var(--coral-bg);color:var(--coral)}
+  .verdict.wait{background:var(--amber-bg);color:var(--amber)}
+  .payload{background:#F4F6F8;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:11.5px;white-space:pre;overflow-x:auto;color:var(--ink)}
+  .payload b{color:var(--teal)}
+
+  .consolebox{background:var(--console);border-radius:12px;padding:16px 18px;min-height:330px;display:flex;flex-direction:column}
+  .ctitle{font-family:var(--mono);font-size:11px;color:var(--console-dim);margin-bottom:10px;display:flex;justify-content:space-between}
+  .clog{font-family:var(--mono);font-size:12px;color:var(--console-txt);flex:1;overflow-y:auto;max-height:330px}
+  .clog div{padding:2.5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  .cok{color:var(--console-ok)}
+  .cerr{color:var(--console-err)}
+  .cdim{color:var(--console-dim)}
+
+  /* job tracker */
+  .jobbar{margin-top:16px;background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:16px 22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .jobbar .jt{font-size:12.5px;font-weight:bold;margin-right:10px}
+  .jstate{font-family:var(--mono);font-size:12px;padding:5px 14px;border-radius:20px;border:1.5px solid var(--line);color:var(--ink2)}
+  .jstate.on{border-color:var(--ink);color:var(--ink);font-weight:bold}
+  .jstate.done{border-color:var(--teal);background:var(--teal-bg);color:var(--teal)}
+  .jstate.fail{border-color:var(--coral);background:var(--coral-bg);color:var(--coral)}
+  .jarrow{color:var(--line);font-size:14px}
+
+  footer{margin-top:26px;font-size:11.5px;color:var(--ink2);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="brand">Enterprise Ethereum Alliance</div>
+    <h1>AP2-Ethereum Trust Adapter — Demo</h1>
+  </div>
+  <div class="net">simulated · Base Sepolia shapes</div>
+</header>
+
+<div class="scenarios" id="scenarios"></div>
+
+<div class="controls">
+  <button class="btn btn-run" id="runBtn" onclick="runAll()">Run scenario</button>
+  <button class="btn btn-ghost" id="stepBtn" onclick="stepOnce()">Step</button>
+  <button class="btn btn-ghost" onclick="reset()">Reset</button>
+  <span class="hint" id="hint">Pick a scenario, then run it or step through it.</span>
+</div>
+
+<div class="rail"><div class="rail-inner" id="rail"></div></div>
+
+<div class="grid">
+  <div class="stepcard" id="stepcard">
+    <div class="stepno">Ready</div>
+    <div class="steptitle">The transaction hasn't started</div>
+    <div class="stepdesc">Every scenario walks one AP2 purchase through the adapter: trust check, mandate binding, escrow, evaluation, settlement. The failure scenarios show the adapter refusing exactly what it should refuse.</div>
+  </div>
+  <div class="consolebox">
+    <div class="ctitle"><span>on-chain calls</span><span id="chainct">0 tx</span></div>
+    <div class="clog" id="clog"><div class="cdim">— console idle —</div></div>
+  </div>
+</div>
+
+<div class="jobbar">
+  <span class="jt">ERC-8183 Job</span>
+  <span class="jstate" id="js0">Open</span><span class="jarrow">→</span>
+  <span class="jstate" id="js1">Funded</span><span class="jarrow">→</span>
+  <span class="jstate" id="js2">Submitted</span><span class="jarrow">→</span>
+  <span class="jstate" id="js3">Terminal</span>
+</div>
+
+<footer>
+  Trust registry: EAS AgentAuthorizationSchema (Shibui) · Mandate binding: MandateEnvelope EIP-712 · Escrow: ERC-8183 (Draft) · Reputation: ERC-8004 · All addresses and hashes are illustrative.
+</footer>
+</div>
+
+<script>
+const ACTORS = [
+  {id:'agent', icon:'🤖', label:'Shopping Agent', sub:'EIP-7702 EOA'},
+  {id:'eas', icon:'🛡', label:'Trust Registry', sub:'EAS · Shibui'},
+  {id:'mandate', icon:'✍️', label:'Mandate', sub:'EIP-712'},
+  {id:'escrow', icon:'🏦', label:'Escrow', sub:'ERC-8183'},
+  {id:'merchant', icon:'🏪', label:'Merchant', sub:'attested addr'},
+  {id:'eval', icon:'⚖️', label:'Evaluator', sub:'EEA-recognized'},
+];
+
+const ENVELOPE = `MandateEnvelope {
+  mandateHash:    <b>0x7c41…e9a2</b>  // keccak256(CartMandate)
+  payer:          0xA11c…9F30
+  agent:          0x8004…2317  // ERC-8004 #23175
+  merchant:       0xM3rc…88Ab
+  maxAmount:      500.00 USDC
+  cumulativeCap:  2,000.00 USDC
+  deadline:       +15 min
+  nonce:          42
+}`;
+
+const SCENARIOS = [
+  {
+    name:'Happy path', sub:'Attested, in-cap, delivered', fail:false,
+    steps:[
+      {actor:0, t:'Agent initiates an AP2 purchase', d:'The user\u2019s agent — an EOA upgraded in place via EIP-7702 — carries a signed IntentMandate: research report, budget 500 USDC, 15-minute window.', v:['wait','Mandate pending'],
+        c:[['','agent 0x8004…2317 → begin AP2 flow'],['dim','delegation: ERC-7715 permission, cap 2,000 USDC']]},
+      {actor:1, t:'Trust check against the registry', d:'One read call replaces a bilateral allow-list: does a trusted attester vouch for the merchant\u2019s address?', v:['ok','Attestation valid'],
+        c:[['','EAS.getAttestation(0xM3rc…88Ab, AgentAuthorizationSchema)'],['ok','✓ issuer: CardNetwork-A (in trusted-attester set)'],['ok','✓ role: MERCHANT · expires in 214 days · not revoked']], tx:1},
+      {actor:2, t:'Mandate bound on-chain', d:'The CartMandate is hashed and signed as a typed EIP-712 struct — one envelope, valid on any compliant chain.', v:['ok','Envelope verified'], payload:true,
+        c:[['','verify EIP-712 signature (EIP-1271 fall-through: n/a, EOA)'],['ok','✓ payer + agent signatures valid'],['ok','✓ 480 USDC ≤ maxAmount 500 · within cumulative cap']], tx:1},
+      {actor:3, t:'Escrow funds the Job', d:'480 USDC locks in the ERC-8183 contract, keyed to the mandateHash. The merchant sees guaranteed funds; the payer keeps guaranteed recourse.', v:['ok','Job funded'], job:1,
+        c:[['','ERC8183.createJob(mandateHash, evaluator=0xEEA…7a1)'],['','ERC8183.fund(480 USDC)'],['ok','✓ Job #5817 → Funded']], tx:2},
+      {actor:4, t:'Merchant delivers', d:'The report ships. Its delivery attestation — content hash plus timestamp — is submitted as the Job deliverable.', v:['ok','Deliverable submitted'], job:2,
+        c:[['','ERC8183.submit(Job #5817, deliverableHash 0x9d3f…44c1)'],['ok','✓ Job → Submitted']], tx:1},
+      {actor:5, t:'Evaluator confirms, funds release', d:'The EEA-recognized evaluator checks the deliverable against the mandate and calls complete(). Escrow pays the merchant; the result writes back into the agent\u2019s ERC-8004 reputation.', v:['ok','Settled'], job:3, jobClass:'done',
+        c:[['','Evaluator.complete(Job #5817)'],['ok','✓ 480 USDC → merchant'],['ok','✓ ERC8004.Reputation += positive feedback (both parties)'],['dim','audit trail: mandateHash ↔ Job #5817 ↔ attestations, permanent']], tx:2},
+    ]
+  },
+  {
+    name:'Revoked attestation', sub:'Slot A blocks the counterparty', fail:true,
+    steps:[
+      {actor:0, t:'Agent initiates an AP2 purchase', d:'Same flow — but this merchant\u2019s attestation was revoked by its card network last week after a compliance failure.', v:['wait','Mandate pending'],
+        c:[['','agent 0x8004…2317 → begin AP2 flow']]},
+      {actor:1, t:'Trust check fails', d:'The registry read finds the attestation revoked. No allow-list update was needed anywhere — revocation propagated to every AP2 participant the moment the attester signed it.', v:['err','REFUSED_ATTESTATION_REVOKED'], err:true,
+        c:[['','EAS.getAttestation(0xBadM…c0de, AgentAuthorizationSchema)'],['err','✗ attestation REVOKED by CardNetwork-A · 2026-08-24'],['err','revert RefusalReason.ATTESTATION_REVOKED'],['dim','transaction never reached the mandate or funds']], tx:1, stop:true},
+    ]
+  },
+  {
+    name:'Cap exceeded', sub:'MandateEnvelope enforces limits', fail:true,
+    steps:[
+      {actor:0, t:'Agent initiates an oversized purchase', d:'A compromised or misfiring agent tries to buy 4,800 USDC of services against a 500 USDC mandate.', v:['wait','Mandate pending'],
+        c:[['','agent 0x8004…2317 → begin AP2 flow'],['dim','cart total: 4,800 USDC']]},
+      {actor:1, t:'Trust check passes', d:'The merchant is legitimate — this failure isn\u2019t about who, it\u2019s about how much.', v:['ok','Attestation valid'],
+        c:[['','EAS.getAttestation(0xM3rc…88Ab, …)'],['ok','✓ valid, issuer CardNetwork-A']], tx:1},
+      {actor:2, t:'Envelope verification refuses', d:'The on-chain check compares the cart against the signed caps. The user\u2019s 500 USDC limit is cryptographically enforced — not a client-side suggestion the agent can ignore.', v:['err','REFUSED_CAP_EXCEEDED'], err:true, payload:true,
+        c:[['','verify MandateEnvelope…'],['err','✗ 4,800 USDC > maxAmount 500 USDC'],['err','revert RefusalReason.CAP_EXCEEDED'],['dim','no funds moved · refusal logged for audit']], tx:1, stop:true},
+    ]
+  },
+  {
+    name:'Disputed delivery', sub:'Slot B adjudicates and refunds', fail:true,
+    steps:[
+      {actor:0, t:'Agent initiates an AP2 purchase', d:'Clean start: valid merchant, in-cap cart, funded escrow.', v:['wait','Mandate pending'],
+        c:[['','agent 0x8004…2317 → begin AP2 flow']]},
+      {actor:1, t:'Trust check passes', d:'Attestation valid.', v:['ok','Attestation valid'],
+        c:[['','EAS.getAttestation(0xM3rc…88Ab, …)'],['ok','✓ valid']], tx:1},
+      {actor:3, t:'Escrow funds the Job', d:'480 USDC locked against the mandateHash.', v:['ok','Job funded'], job:1,
+        c:[['','ERC8183.createJob + fund(480 USDC)'],['ok','✓ Job #5818 → Funded']], tx:2},
+      {actor:4, t:'Merchant submits the wrong deliverable', d:'What ships doesn\u2019t match the mandate — wrong dataset, wrong scope.', v:['wait','Under evaluation'], job:2,
+        c:[['','ERC8183.submit(Job #5818, deliverableHash 0x11a0…777e)'],['dim','deliverable ≠ mandate specification']], tx:1},
+      {actor:5, t:'Evaluator rejects — payer refunded', d:'The evaluator both sides pre-agreed on rejects the deliverable. Escrow returns the funds automatically. The dispute record is on-chain: no merchant-held JSON, no he-said-she-said at representment.', v:['err','REJECTED — refund issued'], job:3, jobClass:'fail', err:true,
+        c:[['','Evaluator.reject(Job #5818, reason: SPEC_MISMATCH)'],['err','✗ deliverable rejected'],['ok','✓ 480 USDC → returned to payer'],['','ERC8004.Reputation: negative feedback recorded (merchant)'],['dim','evidence chain independently verifiable by any adjudicator']], tx:2},
+    ]
+  },
+];
+
+let scen = 0, step = -1, playing = false, txcount = 0;
+
+const $ = id => document.getElementById(id);
+
+function buildScenarios(){
+  $('scenarios').innerHTML = SCENARIOS.map((s,i)=>
+    `<button class="scen ${s.fail?'f':''} ${i===scen?'active':''}" onclick="pick(${i})">${s.name}<small>${s.sub}</small></button>`
+  ).join('');
+}
+function buildRail(){
+  $('rail').innerHTML = ACTORS.map(a=>
+    `<div class="node" id="n-${a.id}"><div class="link"></div><div class="dot">${a.icon}</div><div class="nlabel">${a.label}</div><div class="nsub">${a.sub}</div></div>`
+  ).join('');
+}
+function pick(i){ scen=i; reset(); }
+function reset(){
+  step=-1; playing=false; txcount=0;
+  buildScenarios(); buildRail();
+  $('clog').innerHTML='<div class="cdim">— console idle —</div>';
+  $('chainct').textContent='0 tx';
+  $('stepcard').innerHTML=`<div class="stepno">Ready — ${SCENARIOS[scen].name}</div>
+    <div class="steptitle">${SCENARIOS[scen].sub}</div>
+    <div class="stepdesc">Run the scenario or step through it. Watch the rail, the console, and the Job state bar.</div>`;
+  for(let j=0;j<4;j++){const e=$('js'+j);e.className='jstate';}
+  $('runBtn').disabled=false; $('stepBtn').disabled=false;
+  $('hint').textContent='Pick a scenario, then run it or step through it.';
+}
+function stepOnce(){
+  const S=SCENARIOS[scen];
+  if(step>=S.steps.length-1) return;
+  step++;
+  const st=S.steps[step];
+  // rail
+  document.querySelectorAll('.node').forEach(n=>n.classList.remove('on'));
+  const node=$('n-'+ACTORS[st.actor].id);
+  node.classList.add('on');
+  node.classList.add(st.err?'err':'ok');
+  // step card
+  let html=`<div class="stepno">Step ${step+1} / ${S.steps.length} — ${ACTORS[st.actor].label}</div>
+    <div class="steptitle">${st.t}</div>`;
+  if(st.v) html+=`<div class="verdict ${st.v[0]}">${st.v[1]}</div>`;
+  html+=`<div class="stepdesc">${st.d}</div>`;
+  if(st.payload) html+=`<div class="payload">${ENVELOPE}</div>`;
+  $('stepcard').innerHTML=html;
+  // console
+  if(step===0) $('clog').innerHTML='';
+  st.c.forEach(([cls,line])=>{
+    const d=document.createElement('div');
+    if(cls) d.className='c'+cls;
+    d.textContent=(cls==='dim'?'  ':'» ')+line;
+    if(cls==='ok'||cls==='err'){d.textContent='  '+line;}
+    $('clog').appendChild(d);
+  });
+  $('clog').scrollTop=$('clog').scrollHeight;
+  if(st.tx){txcount+=st.tx;$('chainct').textContent=txcount+' tx';}
+  // job bar
+  if(st.job!==undefined){
+    for(let j=0;j<4;j++){
+      const e=$('js'+j);
+      if(j<st.job) e.className='jstate done';
+      else if(j===st.job) e.className='jstate '+(st.jobClass|| 'on');
+      else e.className='jstate';
+    }
+    if(st.job===3){ $('js3').className='jstate '+(st.jobClass||'done'); for(let j=0;j<3;j++)$('js'+j).className='jstate done'; }
+  }
+  // end?
+  if(step>=S.steps.length-1){
+    $('runBtn').disabled=true;$('stepBtn').disabled=true;
+    $('hint').textContent = st.stop||st.err ? 'Refusal is the feature — reset or pick another scenario.' : 'Settled end-to-end — reset or pick another scenario.';
+  }
+}
+function runAll(){
+  if(playing)return; playing=true;
+  $('runBtn').disabled=true;
+  const tick=()=>{
+    if(step>=SCENARIOS[scen].steps.length-1){playing=false;return;}
+    stepOnce();
+    if(step<SCENARIOS[scen].steps.length-1) setTimeout(tick,1400);
+    else playing=false;
+  };
+  tick();
+}
+buildScenarios(); buildRail(); reset();
+</script>
+</body>
+</html>
