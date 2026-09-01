@@ -5,9 +5,9 @@ A neutral trust and adjudication layer for the Agent Payments Protocol, built on
 **Draft Specification · August 2026 · Spec text CC BY 4.0 · Code Apache 2.0**
 Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org)
 
-Published version: [ap2-ethereum-trust-adapter.html](https://entethalliance.github.io/ops-finance/ap2-ethereum-trust-adapter.html) (part of the [EEA Resource Hub](https://entethalliance.github.io/ops-finance/agents.html))
+Published version: [entethalliance.github.io/eea-rnd-ap2-ethereum-adapter](https://entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/) ([`index.html`](index.html) in this repo). Linked from the [EEA Resource Hub](https://entethalliance.github.io/ops-finance/agents.html).
 
-Interactive demo: [entethalliance.github.io/eea-rnd-ap2-ethereum-adapter](https://entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/) — a clickable simulation of the adapter ([`index.html`](index.html), single file, no dependencies). Four scenarios: happy path, revoked attestation, cap exceeded, disputed delivery. The three refusals are the point — trust infrastructure is proven by what it blocks.
+Interactive demo: [entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/demo.html](https://entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/demo.html) — a clickable simulation of the adapter ([`demo.html`](demo.html), single file, no dependencies). Four scenarios: happy path, revoked attestation, cap exceeded, disputed delivery. The three refusals are the point — trust infrastructure is proven by what it blocks.
 
 This is the canonical spec. It supersedes the earlier v0.1 and v0.2 drafts previously in this repo.
 
