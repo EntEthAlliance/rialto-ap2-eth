@@ -180,7 +180,7 @@ const SCENARIOS = [
       {actor:2, t:'Settlement authorization verified', d:'The AP2 artifact commitment and settlement fields are signed under an EIP-712 domain bound to Base Sepolia and the consuming verifier contract.', v:['ok','Authorization verified'], payload:true,
         c:[['','verify AP2 artifact digest and transaction binding'],['','verify EIP-712 payer signature'],['ok','✓ chainId + verifyingContract match'],['ok','✓ nonce unused · asset/payee match · caps satisfied']], tx:1},
       {actor:3, t:'Optional escrow funds the Job', d:'For this ERC-20 service-job profile, 480 USDC locks in ERC-8183. A hook or adapter enforces the relationship to the AP2 artifact commitment.', v:['ok','Job funded'], job:1,
-        c:[['','ERC8183.createJob(provider, evaluator, expiry, description=commitmentURI)'],['','ERC8183.fund(Job #5817, 480 USDC)'],['ok','✓ Job #5817 → Funded']], tx:2},
+        c:[['','ERC8183.createJob(provider, evaluator, expiredAt, commitmentURI, hook)'],['','ERC8183.setBudget(Job #5817, 480000000)'],['','ERC8183.fund(Job #5817, expectedBudget=480000000)'],['ok','✓ 480 USDC escrowed · Job #5817 → Funded']], tx:3},
       {actor:4, t:'Provider submits a deliverable commitment', d:'The provider submits a commitment to the delivered report and its associated evidence. The underlying evidence must remain retrievable under the profile policy.', v:['ok','Deliverable submitted'], job:2,
         c:[['','ERC8183.submit(Job #5817, deliverableHash 0x9d3f…44c1)'],['ok','✓ Job → Submitted']], tx:1},
       {actor:5, t:'Evaluator confirms, funds release', d:'The pre-agreed evaluator checks accessible evidence under the applicable policy and calls complete(). Any ERC-8004 feedback is a separate, optional Draft-dependent action.', v:['ok','Settled'], job:3, jobClass:'done',
@@ -192,8 +192,8 @@ const SCENARIOS = [
     steps:[
       {actor:0, t:'Agent initiates an AP2 purchase', d:'Same illustrative flow—but this provider\u2019s attestation was revoked by its issuer last week under the issuer\u2019s policy.', v:['wait','Authorization pending'],
         c:[['','Shopping Agent → begin AP2 verification']]},
-      {actor:1, t:'Trust check fails', d:'The resolver finds the attestation revoked. Consumers resolving this UID see the revocation without changing the underlying EAS record or maintaining a per-provider copy.', v:['err','REFUSED_ATTESTATION_REVOKED'], err:true,
-        c:[['','ExampleResolver.resolve(0xBad0…c0de, MERCHANT) → uid'],['','EAS.getAttestation(uid)'],['err','✗ revocationTime != 0'],['err','candidate refusal: AttestationRevoked(uid)'],['dim','transaction never reached authorization or funds']], tx:1, stop:true},
+      {actor:1, t:'Trust check fails', d:'After the revocation transaction reaches the verifier’s required finality, this resolver performs a fresh EAS read and finds the attestation revoked. Cached or lagging index data cannot be assumed current.', v:['err','REFUSED_ATTESTATION_REVOKED'], err:true,
+        c:[['','ExampleResolver.resolve(0xBad0…c0de, MERCHANT) → uid'],['','EAS.getAttestation(uid) at accepted finality'],['err','✗ revocationTime != 0'],['err','candidate refusal: AttestationRevoked(uid)'],['dim','transaction never reached authorization or funds']], tx:1, stop:true},
     ]
   },
   {
@@ -215,7 +215,7 @@ const SCENARIOS = [
       {actor:1, t:'Example trust check passes', d:'The attestation passes this consumer’s illustrative policy.', v:['ok','Passes example policy'],
         c:[['','ExampleResolver.resolve(subject, MERCHANT) → uid'],['ok','✓ accepted under local example policy']], tx:1},
       {actor:3, t:'Escrow funds the Job', d:'480 USDC is locked in a job whose description references the versioned AP2 artifact commitment.', v:['ok','Job funded'], job:1,
-        c:[['','ERC8183.createJob + fund(480 USDC)'],['ok','✓ Job #5818 → Funded']], tx:2},
+        c:[['','ERC8183.createJob(provider, evaluator, expiredAt, commitmentURI, hook)'],['','ERC8183.setBudget(Job #5818, 480000000)'],['','ERC8183.fund(Job #5818, expectedBudget=480000000)'],['ok','✓ 480 USDC escrowed · Job #5818 → Funded']], tx:3},
       {actor:4, t:'Provider submits a nonconforming deliverable', d:'The accessible evidence indicates the delivered dataset does not match the agreed service-job scope.', v:['wait','Under evaluation'], job:2,
         c:[['','ERC8183.submit(Job #5818, deliverableHash 0x11a0…777e)'],['dim','evidence evaluated under the agreed policy']], tx:1},
       {actor:5, t:'Evaluator rejects — payer refunded', d:'The pre-agreed evaluator rejects under the profile policy and ERC-8183 returns escrow. AP2 artifacts and accessible off-chain evidence are still required for later verification or external adjudication.', v:['err','REJECTED — refund issued'], job:3, jobClass:'fail', err:true,
