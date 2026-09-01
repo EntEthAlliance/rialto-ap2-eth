@@ -2,7 +2,7 @@
 
 A neutral trust and adjudication layer for the Agent Payments Protocol, built on Ethereum attestation and escrow standards.
 
-**Draft Specification · August 2026 · Apache License 2.0**
+**Draft Specification · August 2026 · Spec text CC BY 4.0 · Code Apache 2.0**
 Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org)
 
 Published version: [ap2-ethereum-trust-adapter.html](https://entethalliance.github.io/ops-finance/ap2-ethereum-trust-adapter.html) (part of the [EEA Resource Hub](https://entethalliance.github.io/ops-finance/agents.html))
@@ -151,7 +151,7 @@ AP2's contribution rules split the work cleanly, and the adapter follows the spl
 
 ### Working group
 
-Four seats define the minimum viable table: AP2 implementors from the FIDO working group; MetaMask (delegation stack); Coinbase (x402 and the a2a-x402 extension); Virtuals Protocol (the ERC-8183 production deployment). Independent builders already contributing, the authors of #255, #224, and #280, are invited in with the standing they currently lack. All outputs publish under Apache 2.0, implementable by any party without fee, under the EEA's existing antitrust-safe process.
+Four seats define the minimum viable table: AP2 implementors from the FIDO working group; MetaMask (delegation stack); Coinbase (x402 and the a2a-x402 extension); Virtuals Protocol (the ERC-8183 production deployment). Independent builders already contributing, the authors of #255, #224, and #280, are invited in with the standing they currently lack. All outputs publish under the EEA IPR Policy's open terms — specification text under CC BY 4.0, software under Apache 2.0 — implementable by any party without fee, under the EEA's existing antitrust-safe process.
 
 ### Deliverables and sequence
 
@@ -164,4 +164,4 @@ Four seats define the minimum viable table: AP2 implementors from the FIDO worki
 
 ---
 
-Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org) · Draft, August 2026 · Apache License 2.0
+Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org) · Draft, August 2026 · Specification text: CC BY 4.0 · Code: Apache License 2.0 (see [LICENSE](LICENSE) and [CONTRIBUTING.md](CONTRIBUTING.md))
