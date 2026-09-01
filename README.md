@@ -45,8 +45,8 @@ This draft does not attempt to:
 Rialto begins from substantial work already underway. It should align with, test, and credit that work rather than position itself as the owner or arbiter of AP2–Ethereum integration:
 
 - **Authorization and intent:** AP2 v0.2 and the FIDO Alliance provide the authorization foundation. FIDO and Mastercard's Verifiable Intent work addresses related proofs of user intent. Rialto does not replace either effort.
-- **Payment-rail integration:** AP2's `a2a-x402` sample and the x402 ecosystem already demonstrate agent payment flows. Rialto's possible role is limited to studying a compatible EVM authorization and commitment profile.
-- **Delegation and permissions:** MetaMask's Delegation Framework and Ethereum work including EIP-7702 provide important account-delegation primitives. Rialto should reuse or interoperate with those mechanisms where appropriate, not invent a competing wallet permission system.
+- **Payment-rail integration:** AP2's `a2a-x402` sample demonstrates a human-present flow using an x402-compatible payment method, while its README says the AP2-compatible x402 extension is still forthcoming and must be enhanced to create all key AP2 mandates. Core x402 is a payment protocol, not by itself an AP2 mandate-binding profile. Rialto's possible role is limited to studying a compatible EVM authorization and commitment profile.
+- **Delegation and permissions:** MetaMask's Delegation Framework, EIP-7702, and Draft ERC-7715 provide important account-delegation and wallet-permission primitives. Rialto should reuse or interoperate with those mechanisms where appropriate, not invent a competing wallet permission system or treat a permission request as proof of the permission actually granted.
 - **Attestations and policy:** EAS supplies general attestation infrastructure. Shibui, an EEA R&D project, already explores registered attestation UIDs, trusted-attester policies, and institutional trust patterns. The candidate resolver workstream builds on those patterns.
 - **Agent identity and escrow:** ERC-8004 develops agent identity, reputation, and validation concepts; ERC-8183 develops an ERC-20 service-job escrow state machine. Both remain Draft ERCs and retain their own governance and authorship.
 - **AP2 community proposals:** issue #255 on mandate binding, #224 on PactEscrow, #280 on BlindOracle, #265 on conformance vectors, #290 on post-checkout records, and #293 on proof-of-when are relevant prior art and demand signals. Their inclusion here does not imply adoption or endorsement.
@@ -64,9 +64,11 @@ Implementations MUST pin dependency versions and MUST NOT infer normative behavi
 | Dependency | Rialto usage | Status relevant to this draft |
 | --- | --- | --- |
 | AP2 v0.2 | Checkout and Payment Mandates, receipts, constraints, SD-JWT processing | Public specification contributed to FIDO; future normative development occurs at FIDO |
+| x402 v2 | Optional payment protocol and EVM payment schemes | Published protocol; the AP2 sample still labels the AP2-compatible x402 extension as forthcoming |
 | EIP-712 | Typed EVM settlement authorization | Final |
 | EIP-1271 | Contract-account signature validation | Final |
 | EIP-7702 | EOA code delegation | Live protocol feature; does not itself define Rialto authorization policy |
+| ERC-7715 | Wallet execution-permission request and discovery RPCs | Draft; permission/rule support and the returned grant are wallet-dependent |
 | EAS | Attestation storage and revocation | Deployed infrastructure; trust policy remains application-defined |
 | Shibui | Reference pattern for registered attestation UIDs, topic policies, and attester authorization | EEA R&D implementation, not an AP2 standard |
 | ERC-8004 | Optional agent identity and reputation linkage | Draft |
@@ -162,7 +164,7 @@ struct SettlementAuthorization {
 
 ### 5.3 Nonces and caps
 
-The verifying contract MUST atomically consume `executionNonce` before external settlement effects. Nonce state MUST be scoped at least by payer and verifying contract.
+EIP-712 defines typed-data hashing, signing, and domain separation; it explicitly does not provide replay protection. The verifying contract MUST atomically consume `executionNonce` before external settlement effects. Nonce state MUST be scoped at least by payer and verifying contract.
 
 If `cumulativeCap` is non-zero, `capScope` MUST unambiguously identify the payer, mandate, asset, chain, and accounting contract whose stored spend is authoritative. The contract MUST update spent state atomically. A cap enforced independently on two chains is two local caps, not one global cap.
 
@@ -177,7 +179,31 @@ The profile MUST specify which AP2 role authorizes `payer` and how the AP2 `cnf`
 
 An additional agent signature MAY be required by policy, but it MUST NOT substitute for the AP2 credential chain or payer authorization.
 
-### 5.5 Refusal reasons
+### 5.5 Delegation and wallet permissions
+
+An account-delegation primitive does not establish AP2 identity, validate AP2 credentials, or guarantee a particular spending policy. A Rialto implementation using ERC-7715 MUST:
+
+- treat ERC-7715 as Draft and discover the permission and rule types supported by the selected wallet;
+- compare the full permission response with the request, because ERC-7715 states that returned values are not guaranteed to equal requested values;
+- reject a grant whose chain, account, delegate, permission, amount, asset, target, calldata scope, or expiry is broader than policy allows; and
+- validate the granted permission again when it is redeemed rather than treating successful RPC return as settlement authorization.
+
+MetaMask's Delegation Framework states that a delegation permits any on-chain action by default and therefore strongly recommends caveats. Implementations using it MUST pin an audited tagged release, define and test every required caveat, and MUST NOT infer safety from the package name or from EIP-7702 alone.
+
+### 5.6 Settlement-rail selection
+
+x402 v2 defines payment requirements, payloads, verification, settlement, and several payment-flow orderings. Its exact EVM example carries EIP-3009 authorization fields such as payer, recipient, amount, validity window, and nonce; those fields do not inherently carry an AP2 artifact commitment. A future composition MUST define a versioned x402 extension or other authenticated binding between the AP2 transaction and the selected x402 payment.
+
+The AP2 `a2a-x402` sample is useful prior art, but its own README says that the AP2-compatible x402 extension is coming soon and that the current extension must be enhanced to create all key AP2 mandates. This draft therefore MUST NOT describe AP2-to-x402 mandate binding as already complete.
+
+For a single payment amount, an implementation MUST select its custody path before service execution:
+
+- a direct x402 flow follows the ordering and reconciliation rules of its selected x402 scheme; or
+- an ERC-8183 flow prefunds the ERC-8183 job and releases or refunds that escrow under its evaluator policy.
+
+x402 v2 also names one scheme-level payment flow `escrow`; that name does not make it ERC-8183 or give it ERC-8183 semantics. An adapter MAY use an x402 transport or scheme to initiate ERC-8183 funding only if the authenticated binding, custody, and settlement responses are specified. Directly transferring the same funds to a merchant and only afterward creating an ERC-8183 job cannot give that job custody of, or refund authority over, the earlier transfer.
+
+### 5.7 Refusal reasons
 
 A reference implementation SHOULD define stable custom errors for at least:
 
@@ -239,6 +265,8 @@ resolve(subject, topic)
 
 Shibui's current pattern registers a UID for `(identity, topic, attester)`, iterates the trusted attesters for a topic, and requires an issuer-authorization attestation when `addTrustedAttester(address, topics, authUID)` is called. Any Rialto prototype should reuse or generalize that pattern rather than document a nonexistent EAS overload.
 
+Revocation is not an instantaneous broadcast to every verifier. A verifier observes a revocation only after the revocation transaction is included under its chosen finality rule and the verifier reads sufficiently fresh chain state. If it uses an EAS indexer, cache, RPC replica, or cross-chain copy, it MUST define acceptable lag, fail-closed behavior, and invalidation rules. A cached pre-revocation result MUST NOT be described as current merely because the underlying EAS record is on-chain.
+
 ### 6.4 Governance requirements
 
 Before a registry is described as “recognized,” a future profile would need governance rules covering:
@@ -271,6 +299,8 @@ This draft considers ERC-8183 only when the commerce flow is compatible with pre
 | `reason` | Commitment to structured completion/rejection evidence |
 
 The binding MUST be enforced by a hook, adapter, or reference contract; merely mentioning a mandate hash in a description does not create a unique or verified relationship.
+
+The core ERC-8183 lifecycle is not `createJob` followed immediately by `fund`. The client calls `createJob(provider, evaluator, expiredAt, description, hook?)`, the client or provider calls `setBudget(jobId, amount, optParams?)`, and the client calls `fund(jobId, expectedBudget, optParams?)`. `fund` checks that the stored budget equals `expectedBudget`. A mandate commitment therefore belongs in the string `description`, in authenticated hook parameters, or in a separately specified adapter—not in a nonexistent `createJob(mandateHash)` overload.
 
 ### 7.2 Required higher-level policy
 
@@ -359,6 +389,7 @@ Rialto depends on ideas, specifications, implementations, and public discussion 
 - [AP2 Payment Mandate](https://github.com/google-agentic-commerce/AP2/blob/main/docs/ap2/payment_mandate.md)
 - [AP2 contribution scope](https://github.com/google-agentic-commerce/AP2/blob/main/CONTRIBUTING.md)
 - [AP2 `a2a-x402` sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-present/x402)
+- [x402 protocol specification v2](https://github.com/x402-foundation/x402/blob/main/specs/x402-specification-v2.md)
 - [AP2 issue #224: PactEscrow proposal](https://github.com/google-agentic-commerce/AP2/issues/224)
 - [AP2 issue #255: mandate-binding proposal](https://github.com/google-agentic-commerce/AP2/issues/255)
 - [AP2 issue #265: proposed open-mandate conformance vectors](https://github.com/google-agentic-commerce/AP2/issues/265)
@@ -370,7 +401,9 @@ Rialto depends on ideas, specifications, implementations, and public discussion 
 - [EIP-712](https://eips.ethereum.org/EIPS/eip-712)
 - [EIP-1271](https://eips.ethereum.org/EIPS/eip-1271)
 - [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)
+- [ERC-7715](https://eips.ethereum.org/EIPS/eip-7715)
 - [Ethereum Attestation Service](https://docs.attest.org/docs/core--concepts/attestations)
+- [EAS Indexing Service](https://github.com/ethereum-attestation-service/eas-indexing-service)
 - [Shibui](https://github.com/EntEthAlliance/rnd-rwa-erc3643-eas)
 - [ERC-8004](https://eips.ethereum.org/EIPS/eip-8004)
 - [ERC-8183](https://eips.ethereum.org/EIPS/eip-8183)

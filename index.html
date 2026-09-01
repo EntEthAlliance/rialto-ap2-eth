@@ -96,6 +96,7 @@
       <p class="lead">AP2 defines authorization artifacts and verification responsibilities. Rialto explores how a verified AP2 transaction may opt into EVM settlement and related Ethereum infrastructure without redefining AP2 intent or claiming to cover non-EVM rails.</p>
       <div class="correction"><strong>Scope note:</strong> Ethereum settlement is an optional AP2-compatible profile, not a universal first-party AP2 rail. This draft does not claim the same EIP-712 envelope applies to card, ACH, SEPA, or FedNow.</div>
       <div class="correction"><strong>Version note:</strong> AP2 v0.2 uses versioned Checkout and Payment Mandates secured through SD-JWT. The candidate mapping pins that model instead of mixing it with older Intent/Cart SDK types.</div>
+      <div class="correction"><strong>x402 note:</strong> Core x402 is a payment protocol, but the official AP2 sample still says its AP2-compatible x402 extension is forthcoming and must be enhanced to create all key mandates. This draft does not treat AP2-to-x402 mandate binding as finished.</div>
       <div class="correction"><strong>Evidence note:</strong> AP2 dispute evidence is distributed across several roles. This exploration supplements opted-in EVM flows; an on-chain digest does not make off-chain evidence available or adjudicate it.</div>
     </section>
 
@@ -104,7 +105,7 @@
       <p class="lead">Rialto should converge with and credit the work already shaping agent authorization, payments, delegation, attestations, identity, and escrow. Mention here is attribution, not an assertion that any project endorses Rialto.</p>
       <div class="grid">
         <article class="card"><div class="number">AUTHORIZATION</div><h3>AP2, FIDO, and Verifiable Intent</h3><p>AP2 v0.2 supplies the authorization foundation. FIDO and Mastercard's Verifiable Intent work addresses related proofs of user intent. Rialto does not replace either effort.</p></article>
-        <article class="card"><div class="number">PAYMENT + DELEGATION</div><h3>x402 and MetaMask delegation</h3><p>AP2's <code>a2a-x402</code> sample, the x402 ecosystem, MetaMask's Delegation Framework, and EIP-7702 already explore important payment and account-delegation primitives.</p></article>
+        <article class="card"><div class="number">PAYMENT + DELEGATION</div><h3>x402 and MetaMask delegation</h3><p>AP2's <code>a2a-x402</code> sample, x402 v2, MetaMask's Delegation Framework, and EIP-7702 supply important primitives—not a completed AP2 binding. ERC-7715 remains Draft, and a wallet's returned grant may differ from the request.</p></article>
         <article class="card"><div class="number">TRUST + ESCROW</div><h3>EAS, Shibui, ERC-8004, and ERC-8183</h3><p>EAS and Shibui inform the optional trust-policy workstream. Draft ERC-8004 and ERC-8183 retain their own authorship and governance for agent identity and service-job escrow.</p></article>
         <article class="card"><div class="number">COMMUNITY PROPOSALS</div><h3>AP2 issues and experiments</h3><p>Mandate binding, PactEscrow, BlindOracle, conformance vectors, post-checkout records, and proof-of-when proposals are relevant prior art—not adopted standards.</p></article>
       </div>
@@ -144,8 +145,8 @@
     </section>
 
     <section id="authorization">
-      <h2>Portable structure, non-replayable signature</h2>
-      <p>The structure may be reused across EVM chains, but each signature is bound through the EIP-712 domain to <code>chainId</code> and <code>verifyingContract</code>. Cumulative caps are local to their authenticated accounting domain unless a separate cross-chain state protocol is specified.</p>
+      <h2>Portable structure, application-enforced replay protection</h2>
+      <p>The structure may be reused across EVM chains, but each signature is bound through the EIP-712 domain to <code>chainId</code> and <code>verifyingContract</code>. EIP-712 explicitly does not provide replay protection; the consuming contract must atomically consume the signed nonce. Cumulative caps are local to their authenticated accounting domain unless a separate cross-chain state protocol is specified.</p>
       <div class="code">SettlementAuthorization {
   ap2Version, artifactType, digestAlgorithm,
   artifactDigest, transactionIdDigest,
@@ -158,7 +159,7 @@ EIP712Domain {
   name: "RialtoSettlement",
   version, chainId, verifyingContract
 }</div>
-      <p>The consumer contract atomically consumes the nonce and updates any cap accounting before external effects. EIP-1271 is used for contract accounts. EIP-7702 is an execution primitive, not proof that a particular agent is authorized.</p>
+      <p>The consumer contract atomically consumes the nonce and updates any cap accounting before external effects. EIP-1271 is used for contract accounts. EIP-7702 is an execution primitive, not proof that a particular agent is authorized. If Draft ERC-7715 is used, the implementation must discover wallet support and compare the returned grant with the request before redemption.</p>
     </section>
 
     <section id="trust">
@@ -169,12 +170,13 @@ EIP712Domain {
   → EAS.getAttestation(uid)
   → check schema, recipient, attester, expiry, revocation, payload
   → check attester authorization and local trust policy</div>
-      <p>EAS-native <code>recipient</code>, <code>attester</code>, <code>expirationTime</code>, and revocation fields should not be duplicated in schema data. An optional ERC-8004 link uses the full <code>(agentRegistry, agentId)</code> pair, not a chain-ambiguous integer.</p>
+      <p>EAS-native <code>recipient</code>, <code>attester</code>, <code>expirationTime</code>, and revocation fields should not be duplicated in schema data. Revocation is visible only after inclusion under the verifier's finality rule and a sufficiently fresh read; indexers and caches can lag. An optional ERC-8004 link uses the full <code>(agentRegistry, agentId)</code> pair, not a chain-ambiguous integer.</p>
     </section>
 
     <section id="escrow">
       <h2>Escrow is optional and use-case specific</h2>
       <p>ERC-8183 models an ERC-20-funded job with Open, Funded, Submitted, Completed, Rejected, and Expired states. It does not define card or bank settlement. It permits expiry refund from Funded or Submitted, so Rialto requires an explicit evaluation window and timeout policy.</p>
+      <p>The core call sequence is <code>createJob</code> → <code>setBudget</code> → <code>fund(expectedBudget)</code>; there is no <code>createJob(mandateHash)</code> overload. The AP2 binding needs a specified description, hook, or adapter. A direct merchant transfer cannot later be refunded by an ERC-8183 job that never held those funds.</p>
       <p>A deliverable or reason hash proves integrity of later-presented evidence. It does not prove delivery, quality, availability, or legal sufficiency. Evaluator selection, conflicts, fees, outage, fallback, appeals, evidence access, and external consumer rights remain higher-level requirements.</p>
     </section>
 
@@ -186,6 +188,8 @@ EIP712Domain {
         <li>AP2 base64url/raw-digest conversion vectors</li>
         <li>Solidity, TypeScript, and Python cross-verification</li>
         <li>Replay, nonce, expiry, cap, and signer-type tests</li>
+        <li>ERC-7715 requested-versus-granted permission tests</li>
+        <li>AP2-to-x402 binding and settlement-reconciliation tests</li>
         <li>Payee and AP2 <code>cnf</code> identity-binding tests</li>
         <li>EAS registration, revocation, replacement, and stale-index tests</li>
         <li>ERC-8183 expiry-race and evaluator-failure tests</li>
