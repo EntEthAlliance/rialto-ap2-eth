@@ -1,10 +1,10 @@
-# Rialto: an AP2–Ethereum extension
+# Rialto: an exploratory AP2–Ethereum profile
 
-An incubation draft for binding versioned Agent Payments Protocol (AP2) artifacts to Ethereum settlement, optional trust attestations, and optional ERC-20 job escrow.
+An exploratory discussion draft asking how versioned Agent Payments Protocol (AP2) artifacts might compose with Ethereum settlement, optional trust attestations, and optional ERC-20 job escrow.
 
-**Why “Rialto”:** the Venice bridge where merchants verified counterparties before trading. Bridge, market, and trust in one word.
+**Why “Rialto”:** a working name that evokes Venice's historic bridge and market district. It is not meant to imply ownership of the underlying work.
 
-**Incubation draft · September 2026 · Specification text CC BY 4.0 · Code Apache 2.0**
+**Exploratory discussion draft · September 2026 · Specification text CC BY 4.0 · Code Apache 2.0**
 
 Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org)
 
@@ -13,24 +13,24 @@ Published draft: [entethalliance.github.io/eea-rnd-ap2-ethereum-adapter](https:/
 Illustrative demo: [entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/demo.html](https://entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/demo.html) ([`demo.html`](demo.html)).
 
 > [!IMPORTANT]
-> Rialto is not an adopted AP2, FIDO, EEA, EAS, or Ethereum standard. It is not a deployed reference implementation. ERC-8004 and ERC-8183 are Draft ERCs and may change. This document proposes an Ethereum-specific extension profile for review and prototyping.
+> Rialto is a tentative contribution to an active field. It is not an adopted AP2, FIDO, EEA, EAS, or Ethereum standard, a deployed reference implementation, or a claim of consensus. It does not claim originality over the underlying protocols or endorsement by the projects cited here. ERC-8004 and ERC-8183 are Draft ERCs and may change. The uppercase requirement terms below describe candidate safeguards if a profile were adopted; they are not current obligations for AP2 or Ethereum implementations.
 
 ## 1. Scope
 
 AP2 defines authorization artifacts and verification responsibilities for agent-initiated payments. It intentionally leaves payment-instrument implementation, artifact retrieval, evidence retention, and adjudication mechanisms extensible or out of scope. AP2 v0.2 standardization continues in the FIDO Alliance following Google's April 2026 contribution.
 
-Rialto explores four separately adoptable profiles:
+Rialto explores four separately discussable candidate workstreams:
 
-1. **AP2 Artifact Commitment Profile** — commits a versioned AP2 artifact to a fixed-size value suitable for Ethereum.
-2. **EVM Settlement Authorization Profile** — authorizes one settlement action using a chain- and contract-bound EIP-712 signature.
-3. **EAS Trust Resolution Profile** — resolves optional institutional attestations through EAS and a Shibui-style policy adapter.
-4. **ERC-8183 Escrow Profile** — maps compatible ERC-20 service-job transactions into optional evaluator-mediated escrow.
+1. **AP2 Artifact Commitment** — examines how to commit a versioned AP2 artifact to a fixed-size value suitable for Ethereum.
+2. **EVM Settlement Authorization** — examines authorization of one settlement action using a chain- and contract-bound EIP-712 signature.
+3. **EAS Trust Resolution** — considers optional institutional attestations through EAS and a Shibui-style policy adapter.
+4. **ERC-8183 Escrow** — considers mapping compatible ERC-20 service-job transactions into optional evaluator-mediated escrow.
 
-These profiles MUST NOT be represented as a general solution for card, ACH, SEPA, FedNow, or other non-EVM rails. Those rails may reuse AP2 artifacts and governance concepts, but they do not share Ethereum addresses, EIP-712 signatures, ERC-20 escrow, or Ethereum state.
+This draft should not be represented as a general solution for card, ACH, SEPA, FedNow, or other non-EVM rails. Those rails may reuse AP2 artifacts and governance concepts, but they do not share Ethereum addresses, EIP-712 signatures, ERC-20 escrow, or Ethereum state.
 
 ### 1.1 Non-goals
 
-Rialto does not:
+This draft does not attempt to:
 
 - replace AP2's SD-JWT and selective-disclosure verification;
 - create a universal or objective root of trust;
@@ -39,6 +39,23 @@ Rialto does not:
 - turn a deliverable hash into proof of physical delivery or quality;
 - replace card-network rules, courts, consumer-protection rights, or existing dispute processes;
 - standardize ERC-8004 or ERC-8183 ahead of their respective ERC processes.
+
+### 1.2 Relationship to existing work
+
+Rialto begins from substantial work already underway. It should align with, test, and credit that work rather than position itself as the owner or arbiter of AP2–Ethereum integration:
+
+- **Authorization and intent:** AP2 v0.2 and the FIDO Alliance provide the authorization foundation. FIDO and Mastercard's Verifiable Intent work addresses related proofs of user intent. Rialto does not replace either effort.
+- **Payment-rail integration:** AP2's `a2a-x402` sample and the x402 ecosystem already demonstrate agent payment flows. Rialto's possible role is limited to studying a compatible EVM authorization and commitment profile.
+- **Delegation and permissions:** MetaMask's Delegation Framework and Ethereum work including EIP-7702 provide important account-delegation primitives. Rialto should reuse or interoperate with those mechanisms where appropriate, not invent a competing wallet permission system.
+- **Attestations and policy:** EAS supplies general attestation infrastructure. Shibui, an EEA R&D project, already explores registered attestation UIDs, trusted-attester policies, and institutional trust patterns. The candidate resolver workstream builds on those patterns.
+- **Agent identity and escrow:** ERC-8004 develops agent identity, reputation, and validation concepts; ERC-8183 develops an ERC-20 service-job escrow state machine. Both remain Draft ERCs and retain their own governance and authorship.
+- **AP2 community proposals:** issue #255 on mandate binding, #224 on PactEscrow, #280 on BlindOracle, #265 on conformance vectors, #290 on post-checkout records, and #293 on proof-of-when are relevant prior art and demand signals. Their inclusion here does not imply adoption or endorsement.
+
+Rialto's tentative contribution is narrower: examine whether these pieces compose safely, make gaps and assumptions explicit, and offer testable candidate EVM mappings for discussion. Where an existing proposal already addresses a requirement, this work should prefer convergence and attribution over a Rialto-specific alternative.
+
+### 1.3 How to read requirement language
+
+The words **MUST**, **SHOULD**, and **MAY** identify candidate interoperability or security requirements inside this discussion draft. They become binding only for an implementation that voluntarily claims conformance to a future, explicitly versioned Rialto profile. They do not modify AP2, EAS, Ethereum, Shibui, ERC-8004, ERC-8183, or any other cited specification.
 
 ## 2. Dependency status and terminology
 
@@ -57,9 +74,9 @@ Implementations MUST pin dependency versions and MUST NOT infer normative behavi
 
 AP2 v0.2 defines **Checkout Mandates** and **Payment Mandates**. Older SDK material may still refer to `IntentMandate` and `CartMandate`; Rialto implementations MUST use the vocabulary and schemas of the explicitly selected AP2 version.
 
-## 3. Architectural principle: one AP2 authority, one settlement authorization
+## 3. Working hypothesis: one AP2 authority, one settlement authorization
 
-Rialto does not create a second interpretation of user intent. An implementation first verifies the applicable AP2 credential chain according to AP2. Only after that verification succeeds may it construct an EVM settlement authorization containing the minimum data needed to execute settlement.
+The working hypothesis does not introduce a second interpretation of user intent. An implementation first verifies the applicable AP2 credential chain according to AP2. Only after that verification succeeds may it construct an EVM settlement authorization containing the minimum data needed to execute settlement.
 
 ```text
 AP2 presentation
@@ -72,7 +89,7 @@ AP2 presentation
 
 If AP2 verification and the EVM authorization disagree, settlement MUST fail. An EVM signature MUST NOT make an invalid AP2 presentation valid.
 
-## 4. Profile A — AP2 Artifact Commitment
+## 4. Candidate workstream A — AP2 Artifact Commitment
 
 ### 4.1 Do not invent a second canonicalization rule
 
@@ -102,7 +119,7 @@ The conversion from AP2's base64url or textual representation to `bytes32` MUST 
 
 Only a commitment and the disclosures required by the verifier SHOULD be placed on-chain. Implementations MUST analyze dictionary attacks against low-entropy artifacts, linkability across merchants, public payer–agent–merchant graphs, and long-term evidence retention. A salted or hiding commitment MAY be required; if used, its construction and disclosure rules MUST be standardized and tested.
 
-## 5. Profile B — EVM Settlement Authorization
+## 5. Candidate workstream B — EVM Settlement Authorization
 
 ### 5.1 EIP-712 domain
 
@@ -175,7 +192,7 @@ A reference implementation SHOULD define stable custom errors for at least:
 - missing, expired, revoked, or untrusted attestation;
 - payee binding failure.
 
-## 6. Profile C — EAS Trust Resolution
+## 6. Candidate workstream C — EAS Trust Resolution
 
 EAS records claims; consumers decide which claim issuers and policies they trust. A shared EAS deployment improves interoperability and auditability but does not eliminate trust configuration.
 
@@ -210,7 +227,7 @@ The relationship between an address, Agent Card, AP2 signing key, and optional E
 
 Core EAS resolves an attestation by UID, not by `(counterparty, schema)`.
 
-A Rialto resolver MUST therefore use an indexer or Shibui-style registry:
+A resolver conforming to this candidate workstream would therefore need an indexer or Shibui-style registry:
 
 ```text
 resolve(subject, topic)
@@ -220,11 +237,11 @@ resolve(subject, topic)
   → verify attester authorization and local trust policy
 ```
 
-Shibui's current pattern registers a UID for `(identity, topic, attester)`, iterates the trusted attesters for a topic, and requires an issuer-authorization attestation when `addTrustedAttester(address, topics, authUID)` is called. Rialto SHOULD reuse or generalize that pattern rather than document a nonexistent EAS overload.
+Shibui's current pattern registers a UID for `(identity, topic, attester)`, iterates the trusted attesters for a topic, and requires an issuer-authorization attestation when `addTrustedAttester(address, topics, authUID)` is called. Any Rialto prototype should reuse or generalize that pattern rather than document a nonexistent EAS overload.
 
 ### 6.4 Governance requirements
 
-Before a registry is described as “recognized,” its governance specification MUST define:
+Before a registry is described as “recognized,” a future profile would need governance rules covering:
 
 - who can authorize, suspend, and remove attesters or evaluators;
 - assurance levels, jurisdiction, claim scope, and policy versioning;
@@ -236,11 +253,11 @@ Before a registry is described as “recognized,” its governance specification
 
 Publishing registries independently on mainnet and Base creates two governance and state domains unless a synchronization mechanism is specified.
 
-## 7. Profile D — optional ERC-8183 escrow
+## 7. Candidate workstream D — optional ERC-8183 escrow
 
 ERC-8183 defines an ERC-20-funded service job with `Open`, `Funded`, `Submitted`, `Completed`, `Rejected`, and `Expired` states. “Terminal” is a category covering the last three, not a separate stored state.
 
-Rialto MAY use ERC-8183 only when the commerce flow is compatible with prefunded ERC-20 job escrow. The profile MUST NOT be presented as unchanged settlement for card or bank rails.
+This draft considers ERC-8183 only when the commerce flow is compatible with prefunded ERC-20 job escrow. It should not be presented as unchanged settlement for card or bank rails.
 
 ### 7.1 Mapping
 
@@ -281,7 +298,7 @@ AP2 v0.2 states that Checkout artifacts may be provided by the Shopping Agent or
 
 Rialto supplements that evidence for opted-in EVM flows; it does not replace it. Implementations MUST retain the AP2 artifacts needed for AP2 verification and MUST NOT claim that an on-chain digest makes off-chain evidence independently available.
 
-Profiles A and B require an explicit AP2-to-EVM mapping and therefore are not achieved merely by adding an optional address to an Agent Card. Profiles C and D are independently optional.
+Candidate workstreams A and B require an explicit AP2-to-EVM mapping and therefore are not achieved merely by adding an optional address to an Agent Card. Candidate workstreams C and D are independently optional.
 
 ## 9. Security and privacy requirements
 
@@ -303,9 +320,9 @@ A reference implementation and review MUST cover at least:
 
 Contracts MUST follow checks-effects-interactions, use reentrancy protection where external token or hook calls occur, and define upgrade and administrator powers explicitly.
 
-## 10. Conformance deliverables
+## 10. Research and possible conformance deliverables
 
-Rialto is ready for standards submission only after the repository contains:
+Any future implementation or standards proposal would require at least:
 
 1. Versioned JSON schemas for all off-chain Rialto objects.
 2. Solidity interfaces and an executable reference implementation.
@@ -318,28 +335,38 @@ Rialto is ready for standards submission only after the repository contains:
 9. A threat model, privacy analysis, governance specification, and deployment runbook.
 10. Independent smart-contract security review before handling real value.
 
-The interactive demo is illustrative only. It MUST use the same field names and call shapes as the draft and MUST label simulated actions, proposed behavior, and Draft dependencies.
+The interactive demo is illustrative only. It should use the same field names and call shapes as this draft and clearly label simulated actions, candidate behavior, and Draft dependencies.
 
-## 11. Standards and governance path
+## 11. Possible research and standards path
 
-The proposed sequence is:
+A suggested research sequence is:
 
 1. Agree scope and terminology with AP2/FIDO contributors, including alignment with other FIDO contributions such as Verifiable Intent.
-2. Prototype Profiles A and B against a pinned AP2 v0.2 fixture set on one EVM testnet.
-3. Adapt Shibui's UID-registration and attester-authorization pattern for Profile C.
-4. Prototype Profile D separately for a service-job use case; do not make escrow a prerequisite for AP2 settlement.
+2. Prototype candidate workstreams A and B against a pinned AP2 v0.2 fixture set on one EVM testnet.
+3. Adapt Shibui's UID-registration and attester-authorization pattern for candidate workstream C.
+4. Prototype candidate workstream D separately for a service-job use case; do not make escrow a prerequisite for AP2 settlement.
 5. Publish the conformance and security deliverables in §10.
 6. Submit AP2-facing extension text through the applicable FIDO process and Ethereum-facing interface changes through the relevant ERC processes.
 
-Existing community proposals are useful prior art, not adopted standards. Reuse requires technical validation and compliance with the source contribution and licensing terms.
+This sequence is neither a commitment by the cited projects nor a claim that a new standard is necessary. Existing community proposals are useful prior art, not adopted standards. Reuse requires technical validation, attribution, and compliance with the source contribution and licensing terms.
 
-## 12. References
+## 12. References and acknowledgements
+
+Rialto depends on ideas, specifications, implementations, and public discussion from the projects and contributors below. Listing a source acknowledges that contribution; it does not imply endorsement of this draft.
 
 - [AP2 v0.2 specification](https://github.com/google-agentic-commerce/AP2/blob/main/docs/ap2/specification.md)
 - [AP2 Checkout Mandate](https://github.com/google-agentic-commerce/AP2/blob/main/docs/ap2/checkout_mandate.md)
 - [AP2 Payment Mandate](https://github.com/google-agentic-commerce/AP2/blob/main/docs/ap2/payment_mandate.md)
 - [AP2 contribution scope](https://github.com/google-agentic-commerce/AP2/blob/main/CONTRIBUTING.md)
+- [AP2 `a2a-x402` sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-present/x402)
+- [AP2 issue #224: PactEscrow proposal](https://github.com/google-agentic-commerce/AP2/issues/224)
+- [AP2 issue #255: mandate-binding proposal](https://github.com/google-agentic-commerce/AP2/issues/255)
 - [AP2 issue #265: proposed open-mandate conformance vectors](https://github.com/google-agentic-commerce/AP2/issues/265)
+- [AP2 issue #280: BlindOracle proposal](https://github.com/google-agentic-commerce/AP2/issues/280)
+- [AP2 issue #290: post-checkout record proposal](https://github.com/google-agentic-commerce/AP2/issues/290)
+- [AP2 issue #293: proof-of-when proposal](https://github.com/google-agentic-commerce/AP2/issues/293)
+- [FIDO Alliance: AP2 and Verifiable Intent](https://fidoalliance.org/building-the-trust-layer-for-agentic-payments-with-ap2-and-verifiable-intent/)
+- [MetaMask Delegation Framework](https://github.com/MetaMask/delegation-framework)
 - [EIP-712](https://eips.ethereum.org/EIPS/eip-712)
 - [EIP-1271](https://eips.ethereum.org/EIPS/eip-1271)
 - [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)
@@ -351,4 +378,4 @@ Existing community proposals are useful prior art, not adopted standards. Reuse 
 
 ---
 
-Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org) · Incubation draft, September 2026 · Specification text: CC BY 4.0 · Code: Apache License 2.0
+Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org) · Exploratory discussion draft, September 2026 · Specification text: CC BY 4.0 · Code: Apache License 2.0
