@@ -7,6 +7,8 @@ Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org)
 
 Published version: [ap2-ethereum-trust-adapter.html](https://entethalliance.github.io/ops-finance/ap2-ethereum-trust-adapter.html) (part of the [EEA Resource Hub](https://entethalliance.github.io/ops-finance/agents.html))
 
+Interactive demo: [entethalliance.github.io/eea-rnd-ap2-ethereum-adapter](https://entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/) — a clickable simulation of the adapter ([`index.html`](index.html), single file, no dependencies). Four scenarios: happy path, revoked attestation, cap exceeded, disputed delivery. The three refusals are the point — trust infrastructure is proven by what it blocks.
+
 This is the canonical spec. It supersedes the earlier v0.1 and v0.2 drafts previously in this repo.
 
 ## Why this matters
