@@ -1,6 +1,8 @@
-# The AP2-Ethereum Trust Adapter
+# Rialto AP2-Ethereum Trust Adapter
 
 A neutral trust and adjudication layer for the Agent Payments Protocol, built on Ethereum attestation and escrow standards.
+
+**Why "Rialto":** the Venice bridge where merchants verified counterparties before trading. Bridge, market, and trust in one word.
 
 **Draft Specification · August 2026 · Spec text CC BY 4.0 · Code Apache 2.0**
 Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org)
