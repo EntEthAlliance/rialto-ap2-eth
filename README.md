@@ -6,14 +6,16 @@ An exploratory discussion draft asking how versioned Agent Payments Protocol (AP
 
 **Exploratory discussion draft · September 2026 · Specification text CC BY 4.0 · Code Apache 2.0**
 
-Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org)
+Research by **Redwan Meslem**, Executive Director, Enterprise Ethereum Alliance.
+
+Published as an individual research contribution. This is not an EEA standard, position, member work product, or statement of member consensus.
 
 Published draft: [entethalliance.github.io/rialto-ap2-eth](https://entethalliance.github.io/rialto-ap2-eth/) ([`index.html`](index.html)).
 
 Illustrative demo: [entethalliance.github.io/rialto-ap2-eth/demo.html](https://entethalliance.github.io/rialto-ap2-eth/demo.html) ([`demo.html`](demo.html)).
 
 > [!IMPORTANT]
-> Rialto is a tentative contribution to an active field. It is not an adopted AP2, FIDO, EEA, EAS, or Ethereum standard, a deployed reference implementation, or a claim of consensus. It does not claim originality over the underlying protocols or endorsement by the projects cited here. ERC-8004 and ERC-8183 are Draft ERCs and may change. The uppercase requirement terms below describe candidate safeguards if a profile were adopted; they are not current obligations for AP2 or Ethereum implementations.
+> Rialto is a tentative individual research contribution by Redwan Meslem. It is not an adopted AP2, FIDO, EEA, EAS, or Ethereum standard, an EEA member work product, a deployed reference implementation, or a claim of consensus. It does not claim originality over the underlying protocols or endorsement by the projects cited here. ERC-8004 and ERC-8183 are Draft ERCs and may change. The uppercase requirement terms below describe candidate safeguards if a profile were adopted; they are not current obligations for AP2 or Ethereum implementations.
 
 ## 1. Scope
 
@@ -411,4 +413,4 @@ Rialto depends on ideas, specifications, implementations, and public discussion 
 
 ---
 
-Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org) · Exploratory discussion draft, September 2026 · Specification text: CC BY 4.0 · Code: Apache License 2.0
+Redwan Meslem · Independent exploratory research · September 2026 · Affiliation: Enterprise Ethereum Alliance · Views and proposals are the author's and do not represent EEA member consensus · Specification text: CC BY 4.0 · Code: Apache License 2.0
