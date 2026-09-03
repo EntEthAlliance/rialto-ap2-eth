@@ -1,4 +1,4 @@
-# Rialto: an exploratory AP2: Ethereum profile
+# Rialto: an exploratory AP2-Ethereum profile
 
 An exploratory discussion draft asking how versioned Agent Payments Protocol (AP2) artifacts might compose with Ethereum settlement, optional trust attestations, and optional ERC-20 job escrow.
 
@@ -42,7 +42,7 @@ This draft does not attempt to:
 
 ### 1.2 Relationship to existing work
 
-Rialto begins from substantial work already underway. It should align with, test, and credit that work rather than position itself as the owner or arbiter of AP2: Ethereum integration:
+Rialto begins from substantial work already underway. It should align with, test, and credit that work rather than position itself as the owner or arbiter of AP2-Ethereum integration:
 
 - **Authorization and intent:** AP2 v0.2 and the FIDO Alliance provide the authorization foundation. FIDO and Mastercard's Verifiable Intent work addresses related proofs of user intent. Rialto does not replace either effort.
 - **Payment-rail integration:** AP2's `a2a-x402` sample demonstrates a human-present flow using an x402-compatible payment method, while its README says the AP2-compatible x402 extension is still forthcoming and must be enhanced to create all key AP2 mandates. Core x402 is a payment protocol, not by itself an AP2 mandate-binding profile. Rialto's possible role is limited to studying a compatible EVM authorization and commitment profile.
@@ -119,7 +119,7 @@ The conversion from AP2's base64url or textual representation to `bytes32` MUST 
 
 ### 4.3 Privacy
 
-Only a commitment and the disclosures required by the verifier SHOULD be placed on-chain. Implementations MUST analyze dictionary attacks against low-entropy artifacts, linkability across merchants, public payer: agent: merchant graphs, and long-term evidence retention. A salted or hiding commitment MAY be required; if used, its construction and disclosure rules MUST be standardized and tested.
+Only a commitment and the disclosures required by the verifier SHOULD be placed on-chain. Implementations MUST analyze dictionary attacks against low-entropy artifacts, linkability across merchants, public payer-agent-merchant graphs, and long-term evidence retention. A salted or hiding commitment MAY be required; if used, its construction and disclosure rules MUST be standardized and tested.
 
 ## 5. Candidate workstream B: EVM Settlement Authorization
 
