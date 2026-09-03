@@ -8,9 +8,9 @@ An exploratory discussion draft asking how versioned Agent Payments Protocol (AP
 
 Enterprise Ethereum Alliance · [entethalliance.org](https://entethalliance.org)
 
-Published draft: [entethalliance.github.io/eea-rnd-ap2-ethereum-adapter](https://entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/) ([`index.html`](index.html)).
+Published draft: [entethalliance.github.io/rialto-ap2-eth](https://entethalliance.github.io/rialto-ap2-eth/) ([`index.html`](index.html)).
 
-Illustrative demo: [entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/demo.html](https://entethalliance.github.io/eea-rnd-ap2-ethereum-adapter/demo.html) ([`demo.html`](demo.html)).
+Illustrative demo: [entethalliance.github.io/rialto-ap2-eth/demo.html](https://entethalliance.github.io/rialto-ap2-eth/demo.html) ([`demo.html`](demo.html)).
 
 > [!IMPORTANT]
 > Rialto is a tentative contribution to an active field. It is not an adopted AP2, FIDO, EEA, EAS, or Ethereum standard, a deployed reference implementation, or a claim of consensus. It does not claim originality over the underlying protocols or endorsement by the projects cited here. ERC-8004 and ERC-8183 are Draft ERCs and may change. The uppercase requirement terms below describe candidate safeguards if a profile were adopted; they are not current obligations for AP2 or Ethereum implementations.
