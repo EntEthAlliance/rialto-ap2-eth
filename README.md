@@ -1,8 +1,8 @@
-# Rialto: an exploratory AP2–Ethereum profile
+# Rialto: an exploratory AP2-Ethereum profile
 
 An exploratory discussion draft asking how versioned Agent Payments Protocol (AP2) artifacts might compose with Ethereum settlement, optional trust attestations, and optional ERC-20 job escrow.
 
-**Why “Rialto”:** a working name that evokes Venice's historic bridge and market district. It is not meant to imply ownership of the underlying work.
+**Why "Rialto":** a working name that evokes Venice's historic bridge and market district. It is not meant to imply ownership of the underlying work.
 
 **Exploratory discussion draft · September 2026 · Specification text CC BY 4.0 · Code Apache 2.0**
 
@@ -21,10 +21,10 @@ AP2 defines authorization artifacts and verification responsibilities for agent-
 
 Rialto explores four separately discussable candidate workstreams:
 
-1. **AP2 Artifact Commitment** — examines how to commit a versioned AP2 artifact to a fixed-size value suitable for Ethereum.
-2. **EVM Settlement Authorization** — examines authorization of one settlement action using a chain- and contract-bound EIP-712 signature.
-3. **EAS Trust Resolution** — considers optional institutional attestations through EAS and a Shibui-style policy adapter.
-4. **ERC-8183 Escrow** — considers mapping compatible ERC-20 service-job transactions into optional evaluator-mediated escrow.
+1. **AP2 Artifact Commitment**: examines how to commit a versioned AP2 artifact to a fixed-size value suitable for Ethereum.
+2. **EVM Settlement Authorization**: examines authorization of one settlement action using a chain- and contract-bound EIP-712 signature.
+3. **EAS Trust Resolution**: considers optional institutional attestations through EAS and a Shibui-style policy adapter.
+4. **ERC-8183 Escrow**: considers mapping compatible ERC-20 service-job transactions into optional evaluator-mediated escrow.
 
 This draft should not be represented as a general solution for card, ACH, SEPA, FedNow, or other non-EVM rails. Those rails may reuse AP2 artifacts and governance concepts, but they do not share Ethereum addresses, EIP-712 signatures, ERC-20 escrow, or Ethereum state.
 
@@ -42,7 +42,7 @@ This draft does not attempt to:
 
 ### 1.2 Relationship to existing work
 
-Rialto begins from substantial work already underway. It should align with, test, and credit that work rather than position itself as the owner or arbiter of AP2–Ethereum integration:
+Rialto begins from substantial work already underway. It should align with, test, and credit that work rather than position itself as the owner or arbiter of AP2-Ethereum integration:
 
 - **Authorization and intent:** AP2 v0.2 and the FIDO Alliance provide the authorization foundation. FIDO and Mastercard's Verifiable Intent work addresses related proofs of user intent. Rialto does not replace either effort.
 - **Payment-rail integration:** AP2's `a2a-x402` sample demonstrates a human-present flow using an x402-compatible payment method, while its README says the AP2-compatible x402 extension is still forthcoming and must be enhanced to create all key AP2 mandates. Core x402 is a payment protocol, not by itself an AP2 mandate-binding profile. Rialto's possible role is limited to studying a compatible EVM authorization and commitment profile.
@@ -91,7 +91,7 @@ AP2 presentation
 
 If AP2 verification and the EVM authorization disagree, settlement MUST fail. An EVM signature MUST NOT make an invalid AP2 presentation valid.
 
-## 4. Candidate workstream A — AP2 Artifact Commitment
+## 4. Candidate workstream A: AP2 Artifact Commitment
 
 ### 4.1 Do not invent a second canonicalization rule
 
@@ -119,9 +119,9 @@ The conversion from AP2's base64url or textual representation to `bytes32` MUST 
 
 ### 4.3 Privacy
 
-Only a commitment and the disclosures required by the verifier SHOULD be placed on-chain. Implementations MUST analyze dictionary attacks against low-entropy artifacts, linkability across merchants, public payer–agent–merchant graphs, and long-term evidence retention. A salted or hiding commitment MAY be required; if used, its construction and disclosure rules MUST be standardized and tested.
+Only a commitment and the disclosures required by the verifier SHOULD be placed on-chain. Implementations MUST analyze dictionary attacks against low-entropy artifacts, linkability across merchants, public payer-agent-merchant graphs, and long-term evidence retention. A salted or hiding commitment MAY be required; if used, its construction and disclosure rules MUST be standardized and tested.
 
-## 5. Candidate workstream B — EVM Settlement Authorization
+## 5. Candidate workstream B: EVM Settlement Authorization
 
 ### 5.1 EIP-712 domain
 
@@ -218,7 +218,7 @@ A reference implementation SHOULD define stable custom errors for at least:
 - missing, expired, revoked, or untrusted attestation;
 - payee binding failure.
 
-## 6. Candidate workstream C — EAS Trust Resolution
+## 6. Candidate workstream C: EAS Trust Resolution
 
 EAS records claims; consumers decide which claim issuers and policies they trust. A shared EAS deployment improves interoperability and auditability but does not eliminate trust configuration.
 
@@ -269,7 +269,7 @@ Revocation is not an instantaneous broadcast to every verifier. A verifier obser
 
 ### 6.4 Governance requirements
 
-Before a registry is described as “recognized,” a future profile would need governance rules covering:
+Before a registry is described as "recognized," a future profile would need governance rules covering:
 
 - who can authorize, suspend, and remove attesters or evaluators;
 - assurance levels, jurisdiction, claim scope, and policy versioning;
@@ -281,9 +281,9 @@ Before a registry is described as “recognized,” a future profile would need 
 
 Publishing registries independently on mainnet and Base creates two governance and state domains unless a synchronization mechanism is specified.
 
-## 7. Candidate workstream D — optional ERC-8183 escrow
+## 7. Candidate workstream D: optional ERC-8183 escrow
 
-ERC-8183 defines an ERC-20-funded service job with `Open`, `Funded`, `Submitted`, `Completed`, `Rejected`, and `Expired` states. “Terminal” is a category covering the last three, not a separate stored state.
+ERC-8183 defines an ERC-20-funded service job with `Open`, `Funded`, `Submitted`, `Completed`, `Rejected`, and `Expired` states. "Terminal" is a category covering the last three, not a separate stored state.
 
 This draft considers ERC-8183 only when the commerce flow is compatible with prefunded ERC-20 job escrow. It should not be presented as unchanged settlement for card or bank rails.
 
@@ -300,7 +300,7 @@ This draft considers ERC-8183 only when the commerce flow is compatible with pre
 
 The binding MUST be enforced by a hook, adapter, or reference contract; merely mentioning a mandate hash in a description does not create a unique or verified relationship.
 
-The core ERC-8183 lifecycle is not `createJob` followed immediately by `fund`. The client calls `createJob(provider, evaluator, expiredAt, description, hook?)`, the client or provider calls `setBudget(jobId, amount, optParams?)`, and the client calls `fund(jobId, expectedBudget, optParams?)`. `fund` checks that the stored budget equals `expectedBudget`. A mandate commitment therefore belongs in the string `description`, in authenticated hook parameters, or in a separately specified adapter—not in a nonexistent `createJob(mandateHash)` overload.
+The core ERC-8183 lifecycle is not `createJob` followed immediately by `fund`. The client calls `createJob(provider, evaluator, expiredAt, description, hook?)`, the client or provider calls `setBudget(jobId, amount, optParams?)`, and the client calls `fund(jobId, expectedBudget, optParams?)`. `fund` checks that the stored budget equals `expectedBudget`. A mandate commitment therefore belongs in the string `description`, in authenticated hook parameters, or in a separately specified adapter: not in a nonexistent `createJob(mandateHash)` overload.
 
 ### 7.2 Required higher-level policy
 
