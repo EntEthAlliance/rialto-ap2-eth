@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rialto: Exploratory AP2-Ethereum Flow Demo</title>
+<title>AP2 for Ethereum Settlement | Illustrative flow</title>
 <style>
   :root{
     --paper:#EDF0F2; --panel:#FFFFFF; --ink:#16324C; --ink2:#4A6076;
@@ -92,13 +92,13 @@
 
 <header>
   <div>
-    <div class="brand">Enterprise Ethereum Alliance</div>
-    <h1>Rialto: Exploratory AP2-Ethereum Flow Demo</h1>
+    <div class="brand">Independent research by Redwan Meslem</div>
+    <h1>AP2 for Ethereum Settlement: Illustrative Flow</h1>
   </div>
-  <div class="net">tentative simulation · not deployed</div>
+  <div class="net">illustrative simulation</div>
 </header>
 
-<div class="intro"><strong>One possible design, not a reference implementation.</strong> This simulation uses candidate data structures and illustrative call shapes. It builds on AP2/FIDO, EAS, Shibui, EIP-712, and Draft ERC-8004/8183 work; their mention does not imply endorsement.</div>
+<div class="intro"><strong>Illustration, not a reference implementation.</strong> This simulation follows the <a href="https://github.com/EntEthAlliance/rialto-ap2-eth/blob/main/SPEC.md">canonical research specification</a>. ERC-8183 actions are semantic because the pinned Draft prose and reference ABI are not fully aligned.</div>
 
 <div class="scenarios" id="scenarios"></div>
 
@@ -115,10 +115,10 @@
   <div class="stepcard" id="stepcard">
     <div class="stepno">Ready</div>
     <div class="steptitle">The transaction hasn't started</div>
-    <div class="stepdesc">Every scenario explores one possible opted-in EVM service-job flow: AP2 verification, artifact commitment, chain-specific settlement authorization, optional trust resolution, and optional ERC-8183 escrow. It is not a deployed or agreed implementation.</div>
+    <div class="stepdesc">Every scenario explores one opted-in EVM service-job flow: AP2 verification, artifact reference, chain-specific settlement authorization, optional trust resolution, and optional ERC-8183 escrow.</div>
   </div>
   <div class="consolebox">
-    <div class="ctitle"><span>on-chain calls</span><span id="chainct">0 tx</span></div>
+    <div class="ctitle"><span>illustrative actions</span><span id="chainct">0 tx</span></div>
     <div class="clog" id="clog"><div class="cdim">- console idle -</div></div>
   </div>
 </div>
@@ -132,7 +132,7 @@
 </div>
 
 <footer>
-  Candidate trust resolution: EAS + Shibui-style UID registry · Candidate settlement authorization: EIP-712 · Optional escrow: ERC-8183 (Draft) · Optional identity/reputation: ERC-8004 (Draft) · All calls, addresses, hashes, verdicts, and policies are illustrative; cited projects do not thereby endorse Rialto.
+  Canonical source: <a href="https://github.com/EntEthAlliance/rialto-ap2-eth/blob/main/SPEC.md">SPEC.md</a> | Trust resolution: EAS + Shibui-style UID registry | Settlement authorization: EIP-712 | Optional escrow: ERC-8183 (Draft) | All actions, addresses, hashes, verdicts, and policies are illustrative.
 </footer>
 </div>
 
@@ -146,12 +146,15 @@ const ACTORS = [
   {id:'eval', icon:'⚖️', label:'Evaluator', sub:'example policy'},
 ];
 
-const ENVELOPE = `SettlementAuthorization {
-  ap2Version:        <b>keccak256("ap2-v0.2")</b>
-  artifactType:      keccak256("mandate.payment.1")
-  digestAlgorithm:   SHA-256
-  artifactDigest:    0x7c41…e9a2
-  transactionIdDigest: 0x91bd…3f02
+const ENVELOPE = `AP2Reference {
+  ap2Version:        AP2 v0.2 @ e1ea56d
+  artifactType:      mandate.checkout.1
+  digestProfile:     ap2-v0.2/checkout-hash
+  artifactDigest:    0x7c41…e9a2 (decoded raw bytes)
+  transactionId:     0x91bd…3f02
+}
+SettlementAuthorization {
+  ap2:               AP2Reference above
   payer:             0xA11c…9F30
   agent:             0xA630…2317
   payee:             0xBEEF…88Ab
@@ -160,8 +163,10 @@ const ENVELOPE = `SettlementAuthorization {
   perTransactionCap: 500000000
   cumulativeCap:     2000000000
   capScope:          0x42c0…d113
-  executionNonce:    42
+  nonce:             42
+  validAfter:        now
   deadline:          +15 min
+  settlementMode:    ERC8183_ESCROW
   domain:            Base Sepolia + verifier 0x71A1…7001
 }`;
 
@@ -175,24 +180,24 @@ const SCENARIOS = [
     steps:[
       {actor:0, t:'Agent initiates an AP2 purchase', d:'The Shopping Agent presents a versioned AP2 v0.2 credential chain for a 480 USDC service job. AP2 verification happens before an EVM authorization is constructed.', v:['wait','AP2 verification pending'],
         c:[['','verify AP2 v0.2 Checkout + Payment Mandates'],['dim','only required selective disclosures are presented']]},
-      {actor:1, t:'Optional example trust-policy check', d:'The candidate resolver finds registered attestation UIDs and asks whether an attester trusted under this consumer\u2019s example policy vouches for the provider address.', v:['ok','Passes example policy'],
+      {actor:1, t:'Optional example trust-policy check', d:"The candidate resolver finds registered attestation UIDs and asks whether an attester trusted under this consumer's example policy vouches for the provider address.", v:['ok','Passes example policy'],
         c:[['','ExampleResolver.resolve(0xBEEF…88Ab, MERCHANT) → uid'],['','EAS.getAttestation(uid)'],['ok','✓ schema + recipient + attester + expiry + revocation satisfy example checks'],['ok','✓ attester accepted for topic by local example policy']], tx:1},
-      {actor:2, t:'Settlement authorization verified', d:'The AP2 artifact commitment and settlement fields are signed under an EIP-712 domain bound to Base Sepolia and the consuming verifier contract.', v:['ok','Authorization verified'], payload:true,
-        c:[['','verify AP2 artifact digest and transaction binding'],['','verify EIP-712 payer signature'],['ok','✓ chainId + verifyingContract match'],['ok','✓ nonce unused · asset/payee match · caps satisfied']], tx:1},
-      {actor:3, t:'Optional escrow funds the Job', d:'For this ERC-20 service-job profile, 480 USDC locks in ERC-8183. A hook or adapter enforces the relationship to the AP2 artifact commitment.', v:['ok','Job funded'], job:1,
-        c:[['','ERC8183.createJob(provider, evaluator, expiredAt, commitmentURI, hook)'],['','ERC8183.setBudget(Job #5817, 480000000)'],['','ERC8183.fund(Job #5817, expectedBudget=480000000)'],['ok','✓ 480 USDC escrowed · Job #5817 → Funded']], tx:3},
+      {actor:2, t:'Settlement authorization verified', d:'The AP2 reference and settlement fields are signed under an EIP-712 domain bound to Base Sepolia and the consuming verifier contract.', v:['ok','Authorization verified'], payload:true,
+        c:[['','verify pinned illustrative AP2 reference mapping'],['dim','exact Payment Mandate binding remains open pending vectors'],['','verify EIP-712 payer signature'],['ok','✓ chainId + verifyingContract match'],['ok','✓ nonce unused · asset/payee match · caps satisfied']], tx:1},
+      {actor:3, t:'Optional escrow funds the Job', d:'For this ERC-20 service-job profile, 480 USDC locks in ERC-8183. A hook or adapter enforces the relationship to the AP2 reference.', v:['ok','Job funded'], job:1,
+        c:[['','pinned ERC-8183: create job with AP2 reference'],['','pinned ERC-8183: agree budget of 480000000'],['','pinned ERC-8183: fund job with 480000000'],['ok','✓ 480 USDC escrowed · Job #5817 → Funded']], tx:3},
       {actor:4, t:'Provider submits a deliverable commitment', d:'The provider submits a commitment to the delivered report and its associated evidence. The underlying evidence must remain retrievable under the profile policy.', v:['ok','Deliverable submitted'], job:2,
-        c:[['','ERC8183.submit(Job #5817, deliverableHash 0x9d3f…44c1)'],['ok','✓ Job → Submitted']], tx:1},
+        c:[['','pinned ERC-8183: submit deliverable 0x9d3f…44c1'],['ok','✓ Job → Submitted']], tx:1},
       {actor:5, t:'Evaluator confirms, funds release', d:'The pre-agreed evaluator checks accessible evidence under the applicable policy and calls complete(). Any ERC-8004 feedback is a separate, optional Draft-dependent action.', v:['ok','Settled'], job:3, jobClass:'done',
-        c:[['','Evaluator.complete(Job #5817, evidenceReasonHash)'],['ok','✓ 480 USDC → provider'],['dim','optional: filtered ERC-8004 feedback may reference job and evidence'],['dim','a hash proves integrity, not evidence availability or legal sufficiency']], tx:2},
+        c:[['','pinned ERC-8183: evaluator completes Job #5817'],['ok','✓ 480 USDC → provider'],['dim','optional: filtered ERC-8004 feedback may reference job and evidence'],['dim','a hash proves integrity, not evidence availability or legal sufficiency']], tx:2},
     ]
   },
   {
     name:'Revoked attestation', sub:'Example policy refuses the flow', fail:true,
     steps:[
-      {actor:0, t:'Agent initiates an AP2 purchase', d:'Same illustrative flow—but this provider\u2019s attestation was revoked by its issuer last week under the issuer\u2019s policy.', v:['wait','Authorization pending'],
+      {actor:0, t:'Agent initiates an AP2 purchase', d:"Same illustrative flow, but this provider's attestation was revoked by its issuer last week under the issuer's policy.", v:['wait','Authorization pending'],
         c:[['','Shopping Agent → begin AP2 verification']]},
-      {actor:1, t:'Trust check fails', d:'After the revocation transaction reaches the verifier’s required finality, this resolver performs a fresh EAS read and finds the attestation revoked. Cached or lagging index data cannot be assumed current.', v:['err','REFUSED_ATTESTATION_REVOKED'], err:true,
+      {actor:1, t:'Trust check fails', d:"After the revocation transaction reaches the verifier's required finality, this resolver performs a fresh EAS read and finds the attestation revoked. Cached or lagging index data cannot be assumed current.", v:['err','REFUSED_ATTESTATION_REVOKED'], err:true,
         c:[['','ExampleResolver.resolve(0xBad0…c0de, MERCHANT) → uid'],['','EAS.getAttestation(uid) at accepted finality'],['err','✗ revocationTime != 0'],['err','candidate refusal: AttestationRevoked(uid)'],['dim','transaction never reached authorization or funds']], tx:1, stop:true},
     ]
   },
@@ -201,7 +206,7 @@ const SCENARIOS = [
     steps:[
       {actor:0, t:'Agent initiates an oversized purchase', d:'A compromised or misfiring agent tries to settle 4,800 USDC against a 500 USDC per-transaction cap.', v:['wait','Authorization pending'],
         c:[['','Shopping Agent → begin AP2 verification'],['dim','settlement amount: 4,800 USDC']]},
-      {actor:1, t:'Example trust check passes', d:'The provider passes this local example policy—this failure is about settlement amount, not identity.', v:['ok','Passes example policy'],
+      {actor:1, t:'Example trust check passes', d:'The provider passes this local example policy. This failure is about settlement amount, not identity.', v:['ok','Passes example policy'],
         c:[['','ExampleResolver.resolve(subject, MERCHANT) → uid'],['ok','✓ attestation accepted by local example policy']], tx:1},
       {actor:2, t:'Authorization verification refuses', d:'The consuming contract compares atomic token units against the signed per-transaction cap and its local cap-scope accounting.', v:['err','PER_TRANSACTION_CAP_EXCEEDED'], err:true, payload:true,
         c:[['','verify SettlementAuthorization…'],['err','✗ 4,800,000,000 > perTransactionCap 500,000,000'],['err','revert PerTransactionCapExceeded(...)'],['dim','nonce and spent state remain unchanged · no funds moved']], tx:1, stop:true},
@@ -212,14 +217,14 @@ const SCENARIOS = [
     steps:[
       {actor:0, t:'Agent initiates an AP2 purchase', d:'Illustrative start: AP2 artifacts pass the selected checks, the example provider passes local policy, the amount is in-cap, and optional escrow is funded.', v:['wait','Authorization pending'],
         c:[['','Shopping Agent → begin AP2 verification']]},
-      {actor:1, t:'Example trust check passes', d:'The attestation passes this consumer’s illustrative policy.', v:['ok','Passes example policy'],
+      {actor:1, t:'Example trust check passes', d:"The attestation passes this consumer's illustrative policy.", v:['ok','Passes example policy'],
         c:[['','ExampleResolver.resolve(subject, MERCHANT) → uid'],['ok','✓ accepted under local example policy']], tx:1},
-      {actor:3, t:'Escrow funds the Job', d:'480 USDC is locked in a job whose description references the versioned AP2 artifact commitment.', v:['ok','Job funded'], job:1,
-        c:[['','ERC8183.createJob(provider, evaluator, expiredAt, commitmentURI, hook)'],['','ERC8183.setBudget(Job #5818, 480000000)'],['','ERC8183.fund(Job #5818, expectedBudget=480000000)'],['ok','✓ 480 USDC escrowed · Job #5818 → Funded']], tx:3},
+      {actor:3, t:'Escrow funds the Job', d:'480 USDC is locked in a job whose description carries the versioned AP2 reference.', v:['ok','Job funded'], job:1,
+        c:[['','pinned ERC-8183: create job with AP2 reference'],['','pinned ERC-8183: agree budget of 480000000'],['','pinned ERC-8183: fund job with 480000000'],['ok','✓ 480 USDC escrowed · Job #5818 → Funded']], tx:3},
       {actor:4, t:'Provider submits a nonconforming deliverable', d:'The accessible evidence indicates the delivered dataset does not match the agreed service-job scope.', v:['wait','Under evaluation'], job:2,
-        c:[['','ERC8183.submit(Job #5818, deliverableHash 0x11a0…777e)'],['dim','evidence evaluated under the agreed policy']], tx:1},
-      {actor:5, t:'Evaluator rejects — payer refunded', d:'The pre-agreed evaluator rejects under the profile policy and ERC-8183 returns escrow. AP2 artifacts and accessible off-chain evidence are still required for later verification or external adjudication.', v:['err','REJECTED — refund issued'], job:3, jobClass:'fail', err:true,
-        c:[['','Evaluator.reject(Job #5818, evidenceReasonHash)'],['err','✗ deliverable rejected under evaluator policy'],['ok','✓ 480 USDC → returned to payer'],['dim','optional ERC-8004 feedback requires separate policy'],['dim','on-chain commitments do not make private evidence public or available']], tx:2},
+        c:[['','pinned ERC-8183: submit deliverable 0x11a0…777e'],['dim','evidence evaluated under the agreed policy']], tx:1},
+      {actor:5, t:'Evaluator rejects; payer refunded', d:'The pre-agreed evaluator rejects under the profile policy and ERC-8183 returns escrow. AP2 artifacts and accessible off-chain evidence are still required for later verification or external adjudication.', v:['err','REJECTED; refund issued'], job:3, jobClass:'fail', err:true,
+        c:[['','pinned ERC-8183: evaluator rejects Job #5818'],['err','✗ deliverable rejected under evaluator policy'],['ok','✓ 480 USDC → returned to payer'],['dim','optional ERC-8004 feedback requires separate policy'],['dim','on-chain commitments do not make private evidence public or available']], tx:2},
     ]
   },
 ];
@@ -242,11 +247,11 @@ function pick(i){ scen=i; reset(); }
 function reset(){
   step=-1; playing=false; txcount=0;
   buildScenarios(); buildRail();
-  $('clog').innerHTML='<div class="cdim">— console idle —</div>';
+  $('clog').innerHTML='<div class="cdim">- console idle -</div>';
   $('chainct').textContent='0 tx';
-  $('stepcard').innerHTML=`<div class="stepno">Ready — ${SCENARIOS[scen].name}</div>
+  $('stepcard').innerHTML=`<div class="stepno">Ready: ${SCENARIOS[scen].name}</div>
     <div class="steptitle">${SCENARIOS[scen].sub}</div>
-    <div class="stepdesc">Run or step through this tentative scenario. The rail, console, and Job state bar illustrate candidate behavior rather than deployed calls.</div>`;
+    <div class="stepdesc">Run or step through this scenario. The rail, console, and Job state bar illustrate semantic behavior rather than a frozen Draft ABI.</div>`;
   for(let j=0;j<4;j++){const e=$('js'+j);e.className='jstate';}
   $('runBtn').disabled=false; $('stepBtn').disabled=false;
   $('hint').textContent='Pick a scenario, then run it or step through it.';
@@ -262,7 +267,7 @@ function stepOnce(){
   node.classList.add('on');
   node.classList.add(st.err?'err':'ok');
   // step card
-  let html=`<div class="stepno">Step ${step+1} / ${S.steps.length} — ${ACTORS[st.actor].label}</div>
+  let html=`<div class="stepno">Step ${step+1} / ${S.steps.length}: ${ACTORS[st.actor].label}</div>
     <div class="steptitle">${st.t}</div>`;
   if(st.v) html+=`<div class="verdict ${st.v[0]}">${st.v[1]}</div>`;
   html+=`<div class="stepdesc">${st.d}</div>`;
@@ -292,7 +297,7 @@ function stepOnce(){
   // end?
   if(step>=S.steps.length-1){
     $('runBtn').disabled=true;$('stepBtn').disabled=true;
-    $('hint').textContent = st.stop||st.err ? 'This candidate policy refuses the flow — reset or pick another scenario.' : 'Illustrative flow complete — reset or pick another scenario.';
+    $('hint').textContent = st.stop||st.err ? 'This candidate policy refuses the flow. Reset or pick another scenario.' : 'Illustrative flow complete. Reset or pick another scenario.';
   }
 }
 function runAll(){
