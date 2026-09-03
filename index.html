@@ -27,7 +27,7 @@
     nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
     nav a { color: #d7e4df; text-decoration: none; }
     .brand { font: 600 13px/1.35 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-    .links { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; }
+    .repo-link { font-size: 14px; }
     .hero { background: var(--navy); color: #f8f4ea; padding: 60px max(24px, calc((100vw - 1120px)/2)) 76px; border-top: 1px solid #2b4038; }
     .eyebrow { color: var(--mint); font: 600 12px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .16em; }
     h1 { font-size: clamp(58px, 12vw, 142px); line-height: .9; letter-spacing: -.06em; margin: 18px 0 24px; }
@@ -37,6 +37,11 @@
     main { max-width: 1120px; margin: auto; padding: 42px 24px 90px; }
     .notice { padding: 22px 24px; background: var(--amber-bg); border-left: 5px solid var(--amber); margin-bottom: 42px; max-width: 92ch; }
     section { padding: 54px 0; border-top: 1px solid var(--line); }
+    .overview { padding: 38px; background: var(--panel); border: 1px solid var(--line); margin: 0 0 54px; }
+    .overview h2 { max-width: none; font-size: clamp(28px, 3.5vw, 42px); }
+    .overview-list { margin: 26px 0 0; padding-left: 32px; }
+    .overview-list li { padding: 8px 0 8px 8px; font-size: 19px; font-weight: 650; }
+    .audience { margin: 28px 0 0; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); }
     .section-label { color: var(--green); font: 700 12px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
     h2 { font-size: clamp(32px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -.04em; margin: 0 0 22px; max-width: 18ch; }
     h3 { font-size: 21px; line-height: 1.3; margin: 0 0 10px; }
@@ -62,6 +67,11 @@
     .decision { margin-top: 30px; border: 1px solid var(--green); background: #e5f2ec; padding: 24px; max-width: 900px; }
     .source-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 28px; padding-left: 20px; }
     .source-list li { padding-left: 4px; }
+    .publication-list { list-style: none; padding: 0; margin: 30px 0 0; max-width: 900px; counter-reset: publication; }
+    .publication-list li { counter-increment: publication; position: relative; padding: 22px 24px 22px 76px; background: var(--panel); border: 1px solid var(--line); border-bottom: 0; max-width: none; }
+    .publication-list li:last-child { border-bottom: 1px solid var(--line); }
+    .publication-list li::before { content: counter(publication, decimal-leading-zero); position: absolute; left: 24px; top: 21px; color: var(--green); font: 700 15px var(--mono); }
+    .publication-list strong { display: block; font-size: 18px; }
     footer { background: var(--navy); color: #c8d3ce; padding: 36px max(24px, calc((100vw - 1120px)/2)); }
     footer strong { color: #f8f4ea; }
     footer a { color: var(--mint); }
@@ -69,7 +79,7 @@
       .grid, .grid.three, .source-list { grid-template-columns: 1fr; }
       .handoff { grid-template-columns: 1fr; }
       .handoff .arrow { transform: rotate(90deg); justify-self: center; }
-      .links { display: none; }
+      .overview { padding: 28px 24px; }
     }
   </style>
 </head>
@@ -77,26 +87,32 @@
   <header>
     <nav>
       <div class="brand">Independent research</div>
-      <div class="links">
-        <a href="#problem">The problem</a>
-        <a href="#missing">What is missing</a>
-        <a href="#rialto">Rialto</a>
-        <a href="#testing">Testing</a>
-        <a href="#coordination">Industry questions</a>
-        <a href="https://github.com/EntEthAlliance/rialto-ap2-eth">GitHub</a>
-      </div>
+      <a class="repo-link" href="https://github.com/EntEthAlliance/rialto-ap2-eth">GitHub</a>
     </nav>
   </header>
 
   <div class="hero">
     <div class="eyebrow">AP2 and Ethereum</div>
     <h1>Rialto</h1>
-    <div class="dek">How should an agent authorized through AP2 settle a payment on Ethereum?</div>
-    <p class="hero-summary">AP2 can provide evidence that a person authorized an agent to make a payment. Ethereum can move the money. The missing piece is a common way to connect that authorization to the exact Ethereum transaction safely.</p>
+    <div class="dek">Ethereum settlement should be an optional AP2-compatible profile, not a universal AP2 payment rail.</div>
+    <p class="hero-summary">AP2 can provide evidence that a person authorized an agent to make a payment. Ethereum can move the money. Rialto asks how to connect that authorization to the exact Ethereum transaction safely.</p>
     <div class="byline">Research by Redwan Meslem<br>Executive Director, Enterprise Ethereum Alliance</div>
   </div>
 
   <main>
+    <section class="overview" aria-labelledby="overview-title">
+      <div class="section-label">Summary</div>
+      <h2 id="overview-title">This research is organized around five questions</h2>
+      <ol class="overview-list">
+        <li>What is the problem?</li>
+        <li>What is missing today?</li>
+        <li>What could Rialto provide?</li>
+        <li>What needs to be tested?</li>
+        <li>What does the industry need to work on together?</li>
+      </ol>
+      <p class="audience"><strong>Who this is for:</strong> AP2 implementers, Ethereum payment and wallet teams, and institutional architects evaluating agent payments.</p>
+    </section>
+
     <div class="notice"><strong>Authorship and status.</strong> This is an individual research contribution by Redwan Meslem, published with his EEA affiliation. It is not an EEA standard, position, member work product, or statement of member consensus. It is also not an adopted AP2, FIDO, EAS, or Ethereum standard.</div>
 
     <section id="problem">
@@ -159,7 +175,7 @@
     </section>
 
     <section id="coordination">
-      <div class="section-label">5. What needs industry coordination?</div>
+      <div class="section-label">5. What does the industry need to work on together?</div>
       <h2>The difficult questions cannot be answered by Rialto alone</h2>
       <p class="lead">Several of these questions are already visible in the AP2 repository. The proposals differ, but together they show demand for a common answer at the boundary between authorization, settlement, trust, delivery, and evidence.</p>
       <div class="grid">
@@ -179,11 +195,10 @@
       <div class="plain-statement">Rialto is not intended to answer these questions unilaterally. Its purpose is to make the gaps concrete enough for the relevant communities to decide what should be standardized and what should remain implementation-specific.</div>
     </section>
 
-    <section id="next">
-      <div class="section-label">Next step</div>
-      <h2>Start with one transaction and publish what breaks</h2>
-      <p class="lead">The immediate research task is to build the narrow prototype, publish the test vectors and threat model, and invite AP2, FIDO, Ethereum, payment, and institutional contributors to challenge the assumptions.</p>
-      <p>For the complete candidate data structures and security considerations, read the <a href="README.md">technical discussion draft</a>. The <a href="demo.html">illustrative demo</a> shows the proposed flow. Contributions and criticism are welcome in the <a href="https://github.com/EntEthAlliance/rialto-ap2-eth">GitHub repository</a>.</p>
+    <section id="references">
+      <div class="section-label">Research material</div>
+      <h2>Technical detail and primary references</h2>
+      <p>For the candidate data structures and security considerations, read the <a href="README.md">technical discussion draft</a>. The <a href="demo.html">illustrative demo</a> shows the proposed flow. Contributions and criticism are welcome in the <a href="https://github.com/EntEthAlliance/rialto-ap2-eth">GitHub repository</a>.</p>
       <h3>Primary references</h3>
       <ul class="source-list">
         <li><a href="https://github.com/google-agentic-commerce/AP2/blob/main/docs/ap2/specification.md">AP2 specification</a></li>
@@ -196,8 +211,21 @@
         <li><a href="https://github.com/EntEthAlliance/rnd-rwa-erc3643-eas">Shibui research</a></li>
       </ul>
     </section>
+
+    <section id="publication">
+      <div class="section-label">Practical publication sequence</div>
+      <h2>Publish the evidence before proposing a standard</h2>
+      <p class="lead">The research should progress from corrections and test evidence to institutional coordination. A formal profile should be the result of that work, not the starting assumption.</p>
+      <ol class="publication-list">
+        <li><strong>Five things people get wrong when connecting AP2 to Ethereum</strong>Publish the recurring technical corrections as a short standalone article.</li>
+        <li><strong>AP2 for Ethereum settlement: vectors and negative tests</strong>Publish known-answer vectors, cross-language verification, replay, expiry, cap, revocation, and failure cases.</li>
+        <li><strong>FIDO implementation report</strong>Document what happened when AP2 was composed with EVM settlement, including where the specifications aligned and where implementation assumptions diverged.</li>
+        <li><strong>Institutional trust resolution for agent payments</strong>Develop attester authorization, registered-UID resolution, staleness policy, and finality assumptions as a separate research draft.</li>
+        <li><strong>Decide whether a formal profile is justified</strong>Use implementation evidence and industry feedback to determine what belongs in AP2 or FIDO, an Ethereum standard, implementation guidance, or a combination.</li>
+      </ol>
+    </section>
   </main>
 
-  <footer><strong>Redwan Meslem</strong> · Independent exploratory research · September 2026<br>Affiliation: Enterprise Ethereum Alliance · Views and proposals are the author's and do not represent EEA member consensus.<br>Specification text CC BY 4.0 · Code Apache 2.0</footer>
+  <footer><strong>Redwan Meslem</strong> · Executive Director, Enterprise Ethereum Alliance<br>Independent exploratory research · September 2026 · Specification text CC BY 4.0 · Code Apache 2.0</footer>
 </body>
 </html>
