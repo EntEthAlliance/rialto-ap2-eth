@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Rialto explores the missing connection between AP2 authorization and Ethereum settlement.">
-  <title>Rialto: Connecting AP2 authorization to Ethereum settlement</title>
+  <meta name="description" content="AP2 for Ethereum Settlement explores the missing connection between AP2 authorization and one exact EVM payment.">
+  <title>AP2 for Ethereum Settlement | Rialto research project</title>
   <style>
     :root {
       --paper: #f1eee7;
@@ -30,7 +30,7 @@
     .repo-link { font-size: 14px; }
     .hero { background: var(--navy); color: #f8f4ea; padding: 60px max(24px, calc((100vw - 1120px)/2)) 76px; border-top: 1px solid #2b4038; }
     .eyebrow { color: var(--mint); font: 600 12px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .16em; }
-    h1 { font-size: clamp(58px, 12vw, 142px); line-height: .9; letter-spacing: -.06em; margin: 18px 0 24px; }
+    h1 { font-size: clamp(50px, 8vw, 104px); line-height: .92; letter-spacing: -.055em; margin: 18px 0 24px; max-width: 11ch; }
     .dek { max-width: 900px; color: #f8f4ea; font-size: clamp(23px, 3vw, 36px); line-height: 1.28; letter-spacing: -.025em; }
     .hero-summary { max-width: 760px; color: #c8d3ce; font-size: 18px; margin: 24px 0 0; }
     .byline { display: inline-block; margin-top: 32px; color: #2e2415; background: var(--mint); padding: 10px 14px; font: 700 12px/1.45 var(--mono); letter-spacing: .04em; }
@@ -92,9 +92,9 @@
   </header>
 
   <div class="hero">
-    <div class="eyebrow">AP2 and Ethereum</div>
-    <h1>Rialto</h1>
-    <div class="dek">Ethereum settlement should be an optional AP2-compatible profile, not a universal AP2 payment rail.</div>
+    <div class="eyebrow">Rialto research project</div>
+    <h1>AP2 for Ethereum Settlement</h1>
+    <div class="dek">Ethereum settlement is an optional AP2-compatible profile, not a universal first-party AP2 rail.</div>
     <p class="hero-summary">AP2 can provide evidence that a person authorized an agent to make a payment. Ethereum can move the money. Rialto asks how to connect that authorization to the exact Ethereum transaction safely.</p>
     <div class="byline">Research by Redwan Meslem<br>Executive Director, Enterprise Ethereum Alliance</div>
   </div>
@@ -104,11 +104,11 @@
       <div class="section-label">Summary</div>
       <h2 id="overview-title">This research is organized around five questions</h2>
       <ol class="overview-list">
-        <li>What is the problem?</li>
-        <li>What is missing today?</li>
-        <li>What could Rialto provide?</li>
-        <li>What needs to be tested?</li>
-        <li>What does the industry need to work on together?</li>
+        <li><strong>What is the problem?</strong> AP2 authorization and Ethereum settlement do not yet have a common, testable handoff.</li>
+        <li><strong>What is missing today?</strong> Artifact binding, replay and cap policy, trust resolution, custody rules, and shared tests.</li>
+        <li><strong>What could Rialto provide?</strong> A narrow optional profile, not another payment protocol.</li>
+        <li><strong>What needs to be tested?</strong> Known-answer vectors and negative cases before more architecture is frozen.</li>
+        <li><strong>What does the industry need to work on together?</strong> Binding rules, trusted attesters, evidence, disputes, and the right standards venue.</li>
       </ol>
       <p class="audience"><strong>Who this is for:</strong> AP2 implementers, Ethereum payment and wallet teams, and institutional architects evaluating agent payments.</p>
     </section>
@@ -160,7 +160,7 @@
     <section id="testing">
       <div class="section-label">4. What needs to be tested?</div>
       <h2>The work should begin with evidence, not a standards claim</h2>
-      <p class="lead">A credible next step is one narrow prototype: a verified AP2 authorization settling one ERC-20 payment on one EVM test network. That prototype should answer the following before Rialto is described as implementation-ready.</p>
+      <p class="lead">The first deliverable is a fixture and negative-test suite. A narrow prototype can then settle one verified AP2 authorization as one ERC-20 payment on one EVM test network. The work should answer the following before any wire format is frozen.</p>
       <ul class="checklist">
         <li>Can Solidity, TypeScript, and Python independently produce and verify the same AP2 reference and settlement signature?</li>
         <li>Do nonce, expiry, amount, payee, asset, chain, and contract checks fail safely?</li>
@@ -198,7 +198,7 @@
     <section id="references">
       <div class="section-label">Research material</div>
       <h2>Technical detail and primary references</h2>
-      <p>For the candidate data structures and security considerations, read the <a href="README.md">technical discussion draft</a>. The <a href="demo.html">illustrative demo</a> shows the proposed flow. Contributions and criticism are welcome in the <a href="https://github.com/EntEthAlliance/rialto-ap2-eth">GitHub repository</a>.</p>
+      <p>For the data structures, open decisions, test gates, and security requirements, read the <a href="https://github.com/EntEthAlliance/rialto-ap2-eth/blob/main/SPEC.md">canonical technical specification</a>. The <a href="demo.html">illustrative demo</a> shows the proposed flow. Contributions and criticism are welcome in the <a href="https://github.com/EntEthAlliance/rialto-ap2-eth">GitHub repository</a>.</p>
       <h3>Primary references</h3>
       <ul class="source-list">
         <li><a href="https://github.com/google-agentic-commerce/AP2/blob/main/docs/ap2/specification.md">AP2 specification</a></li>
@@ -226,6 +226,6 @@
     </section>
   </main>
 
-  <footer><strong>Redwan Meslem</strong> · Executive Director, Enterprise Ethereum Alliance<br>Independent exploratory research · September 2026 · Specification text CC BY 4.0 · Code Apache 2.0</footer>
+  <footer><strong>Redwan Meslem</strong> · Executive Director, Enterprise Ethereum Alliance<br>Independent research · September 2026 · Specification text CC BY 4.0 · Code Apache 2.0</footer>
 </body>
 </html>

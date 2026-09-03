@@ -192,9 +192,10 @@
    ---
 
    Scope note (EEA IPR Policy): this Apache 2.0 license covers the software
-   in this repository (index.html and any schemas, contracts, or reference
-   implementations). The specification text (README.md and the published
-   specification page) is licensed separately under Creative Commons
-   Attribution 4.0 International (CC BY 4.0), per EEA IPR Policy § 3.3.
-   Derivative rights in the specification document do not include the right
-   to modify the Specification it describes.
+   in this repository (demo.html, validation scripts, and any schemas,
+   contracts, or reference implementations). The canonical specification
+   (SPEC.md) and explanatory text (README.md and index.html) are licensed
+   separately under Creative Commons Attribution 4.0 International
+   (CC BY 4.0), per EEA IPR Policy § 3.3. Derivative rights in the
+   specification document do not include the right to modify the
+   Specification it describes.
